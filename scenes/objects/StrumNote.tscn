@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://ouqx1hvb3mjo"]
+
+[ext_resource type="SpriteFrames" uid="uid://dyj5dw41cx7p8" path="res://assets/images/ui/StrumlineNotes.tres" id="1_weo1v"]
+[ext_resource type="Script" uid="uid://chh7qstm45pf4" path="res://source/objects/StrumNote.gd" id="2_oakar"]
+
+[node name="StrumNote" type="AnimatedSprite2D"]
+sprite_frames = ExtResource("1_weo1v")
+animation = &"confirm3"
+script = ExtResource("2_oakar")

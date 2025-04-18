@@ -30,10 +30,3 @@ offset_top = 3.0
 offset_right = 598.0
 offset_bottom = 16.0
 color = Color(0, 1, 0, 1)
-
-[node name="middle" type="ColorRect" parent="."]
-layout_mode = 0
-offset_left = 3.0
-offset_right = 13.0
-offset_bottom = 80.0
-color = Color(1, 1, 1, 0.443137)

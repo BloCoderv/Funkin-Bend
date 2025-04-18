@@ -30,7 +30,6 @@ func _ready():
 	texture = Global.NOTES.get_frame_texture(str(strum_data), 0)
 	texture_size = texture.get_size() * scale
 	pivot = -texture_size / 2
-	if StrumGroup.player_strums[strum_data].downscroll: pivot.y *= -1
 
 	if !is_sustain:
 		sustain.queue_free()
@@ -44,6 +43,10 @@ func _ready():
 	sustain.size.x = sustain.texture.get_size().x
 	sustain_end.size = sustain_end.texture.get_size()
 	
+	if StrumGroup.player_strums[strum_data].downscroll:
+		sustain.scale.y *= -1
+		sustain_end.scale.y *= -1
+	
 	change_sustain_height(
 	NoteGroup.get_sustain_height(length)
 	)
@@ -56,4 +59,8 @@ func change_sustain_height(new:float):
 	sustain.size.y = new + diff
 	if diff <= 0:
 		sustain_end.size.y = new + diff
-	sustain_end.position.y = sustain.size.y + (texture_size.y / 2)
+	if StrumGroup.player_strums[strum_data].downscroll:
+		sustain_end.position.y = sustain.size.y - sustain.position.y
+		sustain_end.position.y *= -1
+	else:
+		sustain_end.position.y = sustain.size.y + sustain.position.y

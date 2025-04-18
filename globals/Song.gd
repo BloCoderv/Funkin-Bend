@@ -1,7 +1,7 @@
 extends Node
 
 var song:Dictionary[String, AudioStream] = {} # INST, VOICES
-var song_id:String = "bopeebo" # CAN CHANGE
+var song_id:String = "dadbattle" # CAN CHANGE
 var song_name:String = "" # bopeebo
 var stage:String = "mainStage" # CAN CHANGE
 

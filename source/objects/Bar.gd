@@ -1,7 +1,10 @@
 extends TextureRect
+class_name Bar
 
 @onready var left:ColorRect = $left
 @onready var right:ColorRect = $right
+
+var smooth:bool = true # MAKES BAR VALUE LERP
 
 var left_to_right:bool = false
 var max_value:float = 100.0
@@ -42,7 +45,6 @@ func _on_value_changed(new:float):
 	right.position.y = offset.y
 	
 	bar_middle = Vector2(right.position.x, (right.size.x / 2.0) + offset.y)
-	$middle.position.x = bar_middle.x
 
 func change_color(c_left:Color, c_right:Color):
 	color_left = c_left

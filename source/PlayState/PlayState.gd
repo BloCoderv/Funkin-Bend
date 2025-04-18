@@ -12,6 +12,10 @@ const SPLASHES_TEXTURE = preload("res://assets/images/ui/noteSplashes.tres")
 @onready var note_group = $UI/NoteGroup
 @onready var strum_group = $UI/StrumGroup
 
+# HEALTH
+@onready var health_bar = $UI/HUD/HealthBar
+
+# GAMEPLAY
 var botplay:bool = false
 
 func _ready():
@@ -19,6 +23,10 @@ func _ready():
 	
 	var err:String = Song.load_song()
 	if err: OS.alert(err, "SONG LOAD ERROR")
+	
+	# HEALTH
+	health_bar.value = 50
+	if Preferences.downscroll: health_bar.position.y = 150
 	
 	for i in Song.song.keys():
 		if i == "Inst": continue
@@ -51,6 +59,10 @@ func player_hit(note:Note):
 		note.is_holding = true
 		note.self_modulate.a = 0.0
 	else: NoteGroup.remove_note(note)
+	
+	# HEALTH
+	health_bar.value += Util.HEALTH_GAIN
+	
 	# RATING
 	var rating:Dictionary = judge_note(abs(Conductor.song_position - note.time))
 	if rating["percent"] == 1:
@@ -68,5 +80,10 @@ func opponent_hit(note:Note):
 	strum.splash_note()
 
 func miss_note(note:Note, kill:bool = false):
+	if !note.is_sustain:
+		health_bar.value -= Util.HEALTH_GAIN
+	else:
+		health_bar.value -= int(note.length / 10)
+	
 	if kill:
 		NoteGroup.remove_note(note)

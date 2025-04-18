@@ -20,12 +20,15 @@ static func load_notes():
 		new.time = note["t"]
 		new.data = note["d"]
 		new.strum_data = note["d"]
+		
+		# ORDER
+		new.z_index = 4 if Preferences.notes_behind_strum else 5
+		
 		if note.has("l"): new.length = note["l"]
 		else: new.is_sustain = false
 		if note["d"] > 3: 
 			new.must_press = false
 			new.strum_data -= 4
-		new.position.y = 720
 		unspawn_notes.append(new)
 
 static func remove_note(note:Note):
@@ -49,6 +52,11 @@ func spawn_notes_of(timeMS:float):
 		if(Song.scroll_speed < 1): n_time /= Song.song_speed
 		if !(note.time - Conductor.song_position < n_time): break
 		# INSTANTIATE
+		if StrumGroup.strum_notes[note.data].downscroll:
+			note.position.y = -note.texture.get_size().y * 0.7
+		else:
+			note.position.y = 720
+		
 		add_child(note)
 		notes.append(note)
 		unspawn_notes.erase(note)
@@ -79,8 +87,16 @@ func _physics_process(delta):
 		note.modulate.a = note_strum.modulate.a
 		
 		var sus_k_offset = 0 if !note.sustain else note.sustain.size.y
-		if note.position.y - (note.pivot.y * 2) + sus_k_offset <= 0:
-			remove_note(note)
+		var downscroll_kill = note.position.y - sus_k_offset >= 720
+		var upscroll_kill = note.position.y - (note.pivot.y * 2) + sus_k_offset <= 0
+		if (note_strum.downscroll
+		and downscroll_kill) or (
+			!note_strum.downscroll
+		and upscroll_kill):
+			if note.must_press and !note.too_late:
+				playstate.miss_note(note, true)
+			else:
+				remove_note(note)
 			continue
 		
 		if note.too_late: continue

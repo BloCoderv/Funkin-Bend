@@ -16,13 +16,19 @@ var reset_time:float = 0.0 # RETURN TO 'STATIC' ANIMATION
 func _ready():
 	play("strum%s" % data)
 	if !opponent or Preferences.opponent_splashes:
-		splash = AnimatedSprite2D.new()
-		splash.sprite_frames = playstate.SPLASHES_TEXTURE
-		splash.modulate.a = Preferences.splash_opacity
-		splash.visible = false
-		splash.animation_finished.connect(func(): splash.visible = false)
-		splash.scale = Vector2(1.2, 1.2)
-		add_child(splash)
+		splash_setup()
+
+func splash_setup():
+	splash = AnimatedSprite2D.new()
+	splash.sprite_frames = playstate.SPLASHES_TEXTURE
+	splash.modulate.a = Preferences.splash_opacity
+	splash.visible = false
+	splash.animation_finished.connect(
+		func():
+			splash.visible = false
+	)
+	splash.scale = Vector2(1.3, 1.3)
+	add_child(splash)
 
 func _process(delta):
 	if reset_time > 0:
@@ -41,6 +47,8 @@ func _input(event):
 			play("press%s" % data)
 	if Input.is_action_just_released("note%s" % data):
 		play("strum%s" % data)
+		if note_in_strum:
+			NoteGroup.check_sustain_hit(note_in_strum, get_tree().current_scene)
 
 func splash_note():
 	if !splash: return

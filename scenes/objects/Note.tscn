@@ -1,6 +1,38 @@
-[gd_scene load_steps=2 format=3 uid="uid://dfnt37xcosfoy"]
+[gd_scene load_steps=6 format=3 uid="uid://dfnt37xcosfoy"]
 
 [ext_resource type="Script" uid="uid://bmbn4v252smto" path="res://source/objects/Note.gd" id="1_8yibj"]
+[ext_resource type="Texture2D" uid="uid://c34b3hq6dnpyh" path="res://assets/images/ui/notes.png" id="1_ftjpg"]
+[ext_resource type="Texture2D" uid="uid://cmtdqxdlb6idk" path="res://assets/images/ui/NOTE_hold_assets.png" id="3_jmgd2"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2x7qj"]
+atlas = ExtResource("1_ftjpg")
+region = Rect2(157, 0, 154, 157)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cqipr"]
+atlas = ExtResource("3_jmgd2")
+region = Rect2(0, 0, 52, 0)
 
 [node name="Note" type="TextureRect"]
+texture = SubResource("AtlasTexture_2x7qj")
 script = ExtResource("1_8yibj")
+
+[node name="Sustain" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0.6)
+layout_mode = 0
+offset_left = 51.0
+offset_top = 78.5
+offset_right = 51.0
+offset_bottom = 78.5
+expand_mode = 1
+stretch_mode = 1
+
+[node name="Sustain_end" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0.6)
+layout_mode = 0
+offset_left = 51.0
+offset_top = 78.5
+offset_right = 103.0
+offset_bottom = 130.5
+texture = SubResource("AtlasTexture_cqipr")
+expand_mode = 1
+stretch_mode = 6

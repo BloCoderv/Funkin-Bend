@@ -5,5 +5,5 @@
 
 [node name="StrumNote" type="AnimatedSprite2D"]
 sprite_frames = ExtResource("1_weo1v")
-animation = &"confirm3"
+animation = &"press3"
 script = ExtResource("2_oakar")

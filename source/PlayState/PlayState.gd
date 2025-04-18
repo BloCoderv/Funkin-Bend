@@ -46,8 +46,11 @@ func player_hit(note:Note):
 	var strum = StrumGroup.player_strums[note.data]
 	strum.play("confirm%s" % strum.data)
 	
-	NoteGroup.kill_note(note)
 	note.was_hit = true
+	if note.is_sustain: 
+		note.is_holding = true
+		note.self_modulate.a = 0.0
+	else: NoteGroup.remove_note(note)
 	# RATING
 	var rating:Dictionary = judge_note(abs(Conductor.song_position - note.time))
 	if rating["percent"] == 1:
@@ -58,8 +61,12 @@ func opponent_hit(note:Note):
 	if Preferences.opponent_hit:
 		strum.play("confirm%s" % strum.data)
 	note.was_hit = true
+	if note.is_sustain: 
+		note.is_holding = true
+		note.self_modulate.a = 0.0
+	else: NoteGroup.remove_note(note)
 	strum.splash_note()
-	NoteGroup.kill_note(note)
 
-func miss_note(note:Note):
-	pass
+func miss_note(note:Note, kill:bool = false):
+	if kill:
+		NoteGroup.remove_note(note)

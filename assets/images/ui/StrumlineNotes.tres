@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=38 format=3 uid="uid://dyj5dw41cx7p8"]
+[gd_resource type="SpriteFrames" load_steps=30 format=3 uid="uid://dyj5dw41cx7p8"]
 
 [ext_resource type="Texture2D" uid="uid://b0yake0qmnr7h" path="res://assets/images/ui/StrumlineNotes.png" id="1_vcni5"]
 
@@ -87,14 +87,6 @@ atlas = ExtResource("1_vcni5")
 region = Rect2(1087, 244, 140, 142)
 margin = Rect2(3, 3, 6, 7)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_nkivt"]
-atlas = ExtResource("1_vcni5")
-region = Rect2(1231, 244, 146, 149)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_3ptqb"]
-atlas = ExtResource("1_vcni5")
-region = Rect2(1231, 244, 146, 149)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_lok7m"]
 atlas = ExtResource("1_vcni5")
 region = Rect2(1327, 4, 142, 140)
@@ -104,14 +96,6 @@ margin = Rect2(4, 2, 7, 6)
 atlas = ExtResource("1_vcni5")
 region = Rect2(1327, 4, 142, 140)
 margin = Rect2(4, 2, 7, 6)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_belxo"]
-atlas = ExtResource("1_vcni5")
-region = Rect2(1473, 4, 149, 146)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4fvor"]
-atlas = ExtResource("1_vcni5")
-region = Rect2(1473, 4, 149, 146)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5mwvq"]
 atlas = ExtResource("1_vcni5")
@@ -123,14 +107,6 @@ atlas = ExtResource("1_vcni5")
 region = Rect2(618, 722, 144, 141)
 margin = Rect2(5, 4, 9, 9)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_x74xd"]
-atlas = ExtResource("1_vcni5")
-region = Rect2(766, 722, 153, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_7mt4n"]
-atlas = ExtResource("1_vcni5")
-region = Rect2(766, 722, 153, 150)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_b8jo7"]
 atlas = ExtResource("1_vcni5")
 region = Rect2(867, 482, 138, 141)
@@ -140,14 +116,6 @@ margin = Rect2(3, 7, 10, 10)
 atlas = ExtResource("1_vcni5")
 region = Rect2(867, 482, 138, 141)
 margin = Rect2(3, 7, 10, 10)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_0kaqb"]
-atlas = ExtResource("1_vcni5")
-region = Rect2(1009, 482, 148, 151)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_jbb8v"]
-atlas = ExtResource("1_vcni5")
-region = Rect2(1009, 482, 148, 151)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qj0sd"]
 atlas = ExtResource("1_vcni5")
@@ -245,16 +213,10 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_rnqbb")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_nkivt")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_3ptqb")
 }],
 "loop": false,
 "name": &"press0",
-"speed": 12.0
+"speed": 24.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -262,16 +224,10 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_snsf8")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_belxo")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4fvor")
 }],
 "loop": false,
 "name": &"press1",
-"speed": 12.0
+"speed": 24.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -279,16 +235,10 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_8mpet")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_x74xd")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_7mt4n")
 }],
 "loop": false,
 "name": &"press2",
-"speed": 12.0
+"speed": 24.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -296,16 +246,10 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_31lgn")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_0kaqb")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_jbb8v")
 }],
 "loop": false,
 "name": &"press3",
-"speed": 12.0
+"speed": 24.0
 }, {
 "frames": [{
 "duration": 1.0,

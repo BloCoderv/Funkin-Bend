@@ -1,8 +1,10 @@
 extends Node
 
 
-var opponent_hit:bool = false # GLOW ON HIT
-var opponent_splashes:bool = true # SPLASH ON HIT
+var opponent_hit:bool = true # GLOW ON HIT
+var opponent_splashes:bool = false # SPLASH ON HIT
+
+var splashes:bool = true # SPLASH ON HIT
 
 var downscroll:bool = false
 var safe_offset:float = 10.0

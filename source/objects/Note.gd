@@ -1,24 +1,59 @@
 extends TextureRect
 class_name Note
 
+@onready var sustain:TextureRect = $Sustain
+@onready var sustain_end:TextureRect = $Sustain_end
+
 var strum_data:int = 0
 var data:int = 0
 
 var time:float = 0.0
-var length:float = 0.0
+var length:float = 330.0
 
 var must_press:bool = true # if true, note is from player
 var was_hit:bool = false
-var is_sustain:bool = false
+var is_sustain:bool = true
 var can_hit:bool = false
 var too_late:bool = false
+var is_holding:bool = false
 
 var pivot:Vector2 = Vector2.ZERO # pivot in middle
 
+var texture_size:Vector2 = Vector2.ZERO
+
 func _ready():
+	while StrumGroup.strum_notes.size() - 1 < strum_data:
+		pass
+	scale = StrumGroup.strum_notes[strum_data].scale
+	
 	# CALC PIVOT
 	texture = Global.NOTES.get_frame_texture(str(strum_data), 0)
-	var tex_size = texture.get_size() * scale
-	pivot = -tex_size / 2
+	texture_size = texture.get_size() * scale
+	pivot = -texture_size / 2
+	if StrumGroup.player_strums[strum_data].downscroll: pivot.y *= -1
+
+	if !is_sustain:
+		sustain.queue_free()
+		sustain_end.queue_free()
+		return
 	
-	is_sustain = bool(length)
+	var textures:Array = Global.get_hold_textures(strum_data)
+	sustain.texture = textures[0]
+	sustain_end.texture = textures[1]
+	
+	sustain.size.x = sustain.texture.get_size().x
+	sustain_end.size = sustain_end.texture.get_size()
+	
+	change_sustain_height(
+	NoteGroup.get_sustain_height(length)
+	)
+
+func get_sustain_size() -> float:
+	return sustain.size.y + sustain_end.size.y
+
+func change_sustain_height(new:float):
+	var diff = new - sustain_end.size.y
+	sustain.size.y = new + diff
+	if diff <= 0:
+		sustain_end.size.y = new + diff
+	sustain_end.position.y = sustain.size.y + (texture_size.y / 2)

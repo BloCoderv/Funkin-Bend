@@ -1,13 +1,13 @@
 extends Node
 
 var song:Dictionary[String, AudioStream] = {} # INST, VOICES
-var song_id:String = "fresh" # CAN CHANGE
+var song_id:String = "bopeebo" # CAN CHANGE
 var song_name:String = "" # bopeebo
 var stage:String = "mainStage" # CAN CHANGE
 
 var scroll_speed:float = 0.0 # 1.0
 var bpm:float = 0.0 # 100.0
-var difficulty:String = "hard" # CAN CHANGE
+var difficulty:String = "nightmare" # CAN CHANGE
 
 var chart_notes:Array = []
 var chart_events:Array = []
@@ -16,11 +16,11 @@ var characters:Dictionary = {}
 
 func load_song() -> String:
 	var path:String = "res://assets/data/songs/{0}/{0}".format([ song_id ])
-	
-	# FOR FUTURE PICO AND ERECT PORT
-	var metadata_file:String = "-metadata.json"
-	var chart_file:String = "-chart.json"
-	var inst_file:String = "Inst.ogg"
+
+	var metadata_file:String = "-metadata-erect.json"
+	var chart_file:String = "-chart-erect.json"
+	var voices_file:String = "-erect.ogg" # "-erect.ogg"
+	var inst_file:String = "Inst-erect.ogg"
 	
 	if !FileAccess.file_exists( # IF METADATA FILE AND CHART FILE EXISTS
 	path + metadata_file) or !FileAccess.file_exists(
@@ -59,10 +59,12 @@ func load_song() -> String:
 	NoteGroup.safe_offset = (Preferences.safe_offset / 60) * 1000
 	
 	## SONG
-	var path_song:String = "res://assets/songs/{0}/".format([ song_name.to_lower() ])
+	var path_song:String = "res://assets/songs/%s/" % song_id
 	
-	var voices_player:String = "Voices-{0}.ogg".format([ characters["player"] ])
-	var voices_opponent:String = "Voices-{0}.ogg".format([ characters["opponent"] ])
+	var voices_player:String = "Voices-%s" % characters["player"]
+	var voices_opponent:String = "Voices-%s" % characters["opponent"]
+	voices_player += voices_file
+	voices_opponent += voices_file
 	
 	if !FileAccess.file_exists( # IF VOICES EXISTS
 	path_song + voices_player) or !FileAccess.file_exists(

@@ -80,6 +80,3 @@ func xml_to_spriteframes():
 	texture.resource_path.length() - 3) + "tres"
 	ResourceSaver.save(spriteframes, anim_path)
 	print("Salved! in %s" % anim_path)
-
-static func get_frames_dict() -> Dictionary:
-	return {}

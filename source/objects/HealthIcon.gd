@@ -30,8 +30,8 @@ func _on_change_icon():
 	texture = tex
 	position.y = -icon.get_size().y / 2
 	pivot_offset.y = icon.get_size().y / 2
-	if !flip_h: pivot_offset.x = icon.get_size().x * .30
-	else: pivot_offset.x = icon.get_size().x * .20
+	if !flip_h: pivot_offset.x = icon.get_size().x * .25
+	else: pivot_offset.x = icon.get_size().x * .25
 	
 	icon = null
 

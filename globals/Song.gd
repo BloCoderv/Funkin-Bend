@@ -1,13 +1,14 @@
 extends Node
 
 var song:Dictionary[String, AudioStream] = {} # INST, VOICES
-var song_id:String = "bopeebo" # CAN CHANGE
+var song_id:String = "lit-up" # CAN CHANGE
 var song_name:String = "" # bopeebo
+var song_mix:String = "bf" # CAN CHANGE
 var stage:String = "mainStage" # CAN CHANGE
 
 var scroll_speed:float = 0.0 # 1.0
 var bpm:float = 0.0 # 100.0
-var difficulty:String = "nightmare" # CAN CHANGE
+var difficulty:String = "hard" # CAN CHANGE
 
 var chart_notes:Array = []
 var chart_events:Array = []
@@ -16,11 +17,13 @@ var characters:Dictionary = {}
 
 func load_song() -> String:
 	var path:String = "res://assets/data/songs/{0}/{0}".format([ song_id ])
-
-	var metadata_file:String = "-metadata-erect.json"
-	var chart_file:String = "-chart-erect.json"
-	var voices_file:String = "-erect.ogg" # "-erect.ogg"
-	var inst_file:String = "Inst-erect.ogg"
+	
+	var mix:String = "" if !song_mix else "-" + song_mix
+	
+	var metadata_file:String = "-metadata%s.json" % mix
+	var chart_file:String = "-chart%s.json" % mix
+	var voices_file:String = "%s.ogg" % mix
+	var inst_file:String = "Inst%s.ogg" % mix
 	
 	if !FileAccess.file_exists( # IF METADATA FILE AND CHART FILE EXISTS
 	path + metadata_file) or !FileAccess.file_exists(

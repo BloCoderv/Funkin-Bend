@@ -41,7 +41,7 @@ static func invalidate_note(note:Note):
 
 static func check_sustain_hit(note:Note, playstate:PlayState):
 	if note and note.is_sustain and note.was_hit and note.length > 10: 
-		playstate.miss_note(note, true)
+		playstate.miss_note(note.strum_data, note, true)
 
 static func get_sustain_height(length:float) -> float:
 	return length * Util.PIXEL_PER_MS * Song.scroll_speed
@@ -98,7 +98,7 @@ func _physics_process(delta):
 			!note_strum.downscroll
 		and upscroll_kill):
 			if note.must_press and !note.too_late:
-				playstate.miss_note(note, true)
+				playstate.miss_note(note.strum_data, note, true)
 			else:
 				remove_note(note)
 			continue
@@ -107,12 +107,12 @@ func _physics_process(delta):
 		
 		if Conductor.song_position - note.time > invalid_offset:
 			if note.must_press and !playstate.botplay and !note.is_sustain:
-				playstate.miss_note(note)
+				playstate.miss_note(note.strum_data, note)
 				note.too_late = true
 				invalidate_note(note)
 		
 		# PLAYER STUFF
-		if note.must_press and !playstate.botplay:
+		if note.must_press and !playstate.botplay and playstate.song_started:
 			if (
 				!note.was_hit
 				and note.time > Conductor.song_position - safe_offset 
@@ -140,7 +140,7 @@ func _physics_process(delta):
 					remove_note(note)
 					continue
 		# OPPONENT STUFF
-		elif !playstate.botplay:
+		elif !playstate.botplay and playstate.song_started:
 			if Conductor.song_position >= note.time and !note.was_hit:
 				note.length -= delta_ms
 				playstate.opponent_hit(note)
@@ -156,7 +156,7 @@ func _physics_process(delta):
 					remove_note(note)
 					continue
 		# BOTPLAY STUFF
-		else:
+		elif playstate.song_started:
 			if Conductor.song_position >= note.time:
 				note.length -= delta_ms
 				playstate.player_hit(note)

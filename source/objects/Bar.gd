@@ -18,33 +18,52 @@ var color_right:Color = Color.GREEN
 
 var margin:Vector2 = Vector2(6, 6)
 var bar_middle:float = 0.0
+var middle_target:float = 0.0
+var bar_target:float = 0.0
+
+var texture_size:Vector2 = texture.get_size()
+var offset:Vector2 = Vector2.ZERO
 
 func _ready():
 	_on_value_changed(value)
 	left.color = color_left
 	right.color = color_right
+	if !smooth:
+		set_process(false)
 
-func _on_value_changed(new:float):
-	var tex_size = texture.get_size()
-	var offset = margin / 2.0
+func _process(delta):
+	left.size.x = lerp(left.size.x, bar_target, delta * 6)
 	
-	tex_size.x -= margin.x
-	tex_size.y -= margin.x
-	
-	left.size.y = tex_size.y
-	right.size.y = tex_size.y
-	
-	if left_to_right:
-		left.size.x = lerp(0.0, tex_size.x, value / 100.0)
-	else:
-		left.size.x = lerp(0.0, tex_size.x, 1 - value / 100.0)
-	left.position = offset
-	
-	right.size.x = tex_size.x - left.size.x
+	right.size.x = texture_size.x - left.size.x
 	right.position.x = left.size.x + offset.x
-	right.position.y = offset.y
 	
 	bar_middle = right.position.x
+
+func _on_value_changed(new:float):
+	texture_size = texture.get_size()
+	offset = margin / 2.0
+	
+	texture_size.x -= margin.x
+	texture_size.y -= margin.x
+	
+	left.size.y = texture_size.y
+	right.size.y = texture_size.y
+	
+	if left_to_right:
+		bar_target = lerp(0.0, texture_size.x, value / 100.0)
+	else:
+		bar_target = lerp(0.0, texture_size.x, 1 - value / 100.0)
+	
+	left.position = offset
+	right.position.y = offset.y
+	
+	if !smooth:
+		left.size.x = bar_target
+		
+		right.size.x = texture_size.x - left.size.x
+		right.position.x = left.size.x + offset.x
+		
+		bar_middle = right.position.x
 
 func change_color(c_left:Color, c_right:Color):
 	color_left = c_left

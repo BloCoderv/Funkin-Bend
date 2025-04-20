@@ -14,7 +14,7 @@ const MARGIN = 150
 func generate_strums():
 	# PLAYER
 	var x:int = Global.SCREEN_SIZE.x - MARGIN - (SEPARATION * 3) # 3 is mania
-	var y:int = 110 if !Preferences.downscroll else Global.SCREEN_SIZE.y - 110
+	var y:int = 104 if !Preferences.downscroll else Global.SCREEN_SIZE.y - 104
 	generate_new_strum(Vector2(x, y), false)
 	# OPPONENT
 	x = MARGIN # 3 is mania

@@ -44,7 +44,10 @@ static func check_sustain_hit(note:Note, playstate:PlayState):
 		playstate.miss_note(note, true)
 
 static func get_sustain_height(length:float) -> float:
-	return length * .45 * Song.scroll_speed
+	return length * Util.PIXEL_PER_MS * Song.scroll_speed
+
+static func sustain_hold_loop(strum:StrumNote):
+	strum.frame = 0 if strum.frame else 1
 
 func spawn_notes_of(timeMS:float):
 	for note in unspawn_notes:
@@ -55,7 +58,7 @@ func spawn_notes_of(timeMS:float):
 		if StrumGroup.strum_notes[note.data].downscroll:
 			note.position.y = -note.texture.get_size().y * 0.7
 		else:
-			note.position.y = 720
+			note.position.y = Global.SCREEN_SIZE.y
 		
 		add_child(note)
 		notes.append(note)
@@ -67,7 +70,7 @@ func _physics_process(delta):
 	var delta_ms:float = delta * 1000
 	
 	if Preferences.opponent_hit:
-		strum_anim_time = Conductor.step_per_beat * .75
+		strum_anim_time = Conductor.step_per_beat * 1.75
 	else: strum_anim_time = 0.001
 	
 	for note in notes:
@@ -75,7 +78,8 @@ func _physics_process(delta):
 		
 		# VELOCITY
 		if !note.is_sustain or (note.is_sustain and !note.is_holding):
-			var note_song_pos = .45 * (Conductor.song_position - note.time)
+			var note_song_pos = Util.PIXEL_PER_MS * (
+				Conductor.song_position - note.time)
 			note_song_pos *= Song.scroll_speed
 			if !note_strum.downscroll: note_song_pos *= -1
 			note.position.y = note_strum.position.y + note_song_pos + note.pivot.y
@@ -131,8 +135,8 @@ func _physics_process(delta):
 			if note.was_hit and note.is_sustain and note.is_holding:
 				if note.length > 0:
 					note.length -= delta_ms
+					sustain_hold_loop(note_strum)
 				else:
-					note.length = 0.0
 					remove_note(note)
 					continue
 		# OPPONENT STUFF
@@ -141,12 +145,13 @@ func _physics_process(delta):
 				note.length -= delta_ms
 				playstate.opponent_hit(note)
 				# OPPONENT HIT ANIMATION TIME
-				note_strum.reset_time = strum_anim_time
+				if !note.is_sustain: note_strum.reset_time = strum_anim_time
 			if note.was_hit and note.is_sustain:
 				if note.length > 0:
 					note.length -= delta_ms
+					if Preferences.opponent_hit:
+						sustain_hold_loop(note_strum)
 				else:
-					note.length = 0.0
 					note_strum.reset_time = strum_anim_time
 					remove_note(note)
 					continue
@@ -155,10 +160,11 @@ func _physics_process(delta):
 			if Conductor.song_position >= note.time:
 				note.length -= delta_ms
 				playstate.player_hit(note)
-				note_strum.reset_time = strum_anim_time
+				if !note.is_sustain: note_strum.reset_time = strum_anim_time
 			if note.was_hit and note.is_sustain:
 				if note.length > 0:
 					note.length -= delta_ms
+					sustain_hold_loop(note_strum)
 				else:
 					note_strum.reset_time = strum_anim_time
 					remove_note(note)

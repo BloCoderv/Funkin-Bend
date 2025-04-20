@@ -3,6 +3,9 @@ extends Node
 # PRELOAD
 const NOTES = preload("res://assets/images/ui/notes.tres")
 const NOTE_HOLD = preload("res://assets/images/ui/NOTE_hold_assets.png")
+const SPLASHES_TEXTURE = preload("res://assets/images/ui/noteSplashes.tres")
+
+const ICON_NONE = preload("res://assets/images/icons/icon-face.png")
 
 # SCREEN STUFF
 const SCREEN_SIZE = Vector2(1280, 720)

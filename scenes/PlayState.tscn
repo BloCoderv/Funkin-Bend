@@ -1,13 +1,18 @@
-[gd_scene load_steps=6 format=3 uid="uid://ddrywk1jny7yg"]
+[gd_scene load_steps=8 format=3 uid="uid://ddrywk1jny7yg"]
 
 [ext_resource type="Script" uid="uid://bq2vjtoycd6k2" path="res://source/PlayState/PlayState.gd" id="1_b0ega"]
 [ext_resource type="Script" uid="uid://xfdqhbnnhq6p" path="res://source/PlayState/NoteGroup.gd" id="2_xq65u"]
 [ext_resource type="Script" uid="uid://pqmqd4ymy621" path="res://source/PlayState/StrumGroup.gd" id="3_l02w5"]
 [ext_resource type="Texture2D" uid="uid://udqae1fkp73e" path="res://assets/images/stages/week1/stageback.png" id="5_4wsi4"]
 [ext_resource type="PackedScene" uid="uid://duumxr33dyeeu" path="res://scenes/objects/Bar.tscn" id="5_paqu8"]
+[ext_resource type="Script" uid="uid://cxdv1yq7oulwc" path="res://source/objects/HealthIcon.gd" id="6_paqu8"]
+[ext_resource type="Script" uid="uid://kcdcy05olunk" path="res://source/objects/Character.gd" id="7_4wsi4"]
 
 [node name="PlayState" type="Node2D"]
 script = ExtResource("1_b0ega")
+
+[node name="CountdownTimer" type="Timer" parent="."]
+process_callback = 0
 
 [node name="VoicesOpponent" type="AudioStreamPlayer" parent="."]
 autoplay = true
@@ -44,8 +49,39 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -300.5
-offset_top = -169.0
+offset_top = -79.2
 offset_right = 300.5
-offset_bottom = -150.0
+offset_bottom = -60.2
 grow_horizontal = 2
 grow_vertical = 0
+
+[node name="IconP2" type="TextureRect" parent="UI/HUD/HealthBar"]
+layout_mode = 0
+offset_left = 373.5
+offset_top = -16.0
+offset_right = 413.5
+offset_bottom = 24.0
+script = ExtResource("6_paqu8")
+metadata/_custom_type_script = "uid://cxdv1yq7oulwc"
+
+[node name="IconP1" type="TextureRect" parent="UI/HUD/HealthBar"]
+layout_mode = 0
+offset_left = 77.5
+offset_top = -16.0
+offset_right = 117.5
+offset_bottom = 24.0
+flip_h = true
+script = ExtResource("6_paqu8")
+metadata/_custom_type_script = "uid://cxdv1yq7oulwc"
+
+[node name="Player" type="AnimatedSprite2D" parent="."]
+script = ExtResource("7_4wsi4")
+metadata/_custom_type_script = "uid://kcdcy05olunk"
+
+[node name="Girlfriend" type="AnimatedSprite2D" parent="."]
+script = ExtResource("7_4wsi4")
+metadata/_custom_type_script = "uid://kcdcy05olunk"
+
+[node name="Opponent" type="AnimatedSprite2D" parent="."]
+script = ExtResource("7_4wsi4")
+metadata/_custom_type_script = "uid://kcdcy05olunk"

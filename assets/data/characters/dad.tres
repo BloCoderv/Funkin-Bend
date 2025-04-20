@@ -1,0 +1,76 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/CharacterData.gd" id="1_ek3gv"]
+
+[resource]
+script = ExtResource("1_ek3gv")
+image = "characters/DADDY_DEAREST"
+scale = Vector2(1, 1)
+flip_x = false
+position = Vector2(0, 0)
+animations = [{
+"anim": "singLEFT",
+"fps": 24.0,
+"indices": [],
+"loop": false,
+"name": "Dad Sing Note LEFT",
+"offsets": [-9.0, 10.0]
+}, {
+"anim": "singDOWN",
+"fps": 24.0,
+"indices": [],
+"loop": false,
+"name": "Dad Sing Note DOWN",
+"offsets": [0.0, -30.0]
+}, {
+"anim": "singUP",
+"fps": 24.0,
+"indices": [],
+"loop": false,
+"name": "Dad Sing Note UP",
+"offsets": [-6.0, 50.0]
+}, {
+"anim": "singRIGHT",
+"fps": 24.0,
+"indices": [],
+"loop": false,
+"name": "Dad Sing Note RIGHT",
+"offsets": [0.0, 27.0]
+}, {
+"anim": "idle",
+"fps": 24.0,
+"indices": [],
+"loop": false,
+"name": "Dad idle dance",
+"offsets": [0.0, 0.0]
+}, {
+"anim": "idle-loop",
+"fps": 24.0,
+"indices": [10.0, 11.0, 12.0, 12.0],
+"loop": true,
+"name": "Dad idle dance",
+"offsets": [0.0, 0.0]
+}, {
+"anim": "singLEFT-loop",
+"fps": 24.0,
+"indices": [12.0, 13.0, 14.0, 15.0],
+"loop": true,
+"name": "Dad Sing Note LEFT",
+"offsets": [-9.0, 10.0]
+}, {
+"anim": "singRIGHT-loop",
+"fps": 24.0,
+"indices": [15.0, 16.0, 17.0, 18.0],
+"loop": true,
+"name": "Dad Sing Note RIGHT",
+"offsets": [0.0, 27.0]
+}, {
+"anim": "singUP-loop",
+"fps": 24.0,
+"indices": [56.0, 57.0, 58.0, 59.0],
+"loop": true,
+"name": "Dad Sing Note UP",
+"offsets": [-6.0, 50.0]
+}]
+health_icon = "dad"
+health_color = Color(0.686275, 0.686275, 0.686275, 1)

@@ -20,7 +20,7 @@ func _ready():
 
 func splash_setup():
 	splash = AnimatedSprite2D.new()
-	splash.sprite_frames = playstate.SPLASHES_TEXTURE
+	splash.sprite_frames = Global.SPLASHES_TEXTURE
 	splash.modulate.a = Preferences.splash_opacity
 	splash.visible = false
 	splash.animation_finished.connect(

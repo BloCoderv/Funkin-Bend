@@ -17,7 +17,7 @@ var color_left:Color = Color.RED
 var color_right:Color = Color.GREEN
 
 var margin:Vector2 = Vector2(6, 6)
-var bar_middle:Vector2 = Vector2.ZERO
+var bar_middle:float = 0.0
 
 func _ready():
 	_on_value_changed(value)
@@ -44,7 +44,7 @@ func _on_value_changed(new:float):
 	right.position.x = left.size.x + offset.x
 	right.position.y = offset.y
 	
-	bar_middle = Vector2(right.position.x, (right.size.x / 2.0) + offset.y)
+	bar_middle = right.position.x
 
 func change_color(c_left:Color, c_right:Color):
 	color_left = c_left

@@ -1,22 +1,34 @@
 extends Node2D
 class_name PlayState
 
-# PRELOAD
-const SPLASHES_TEXTURE = preload("res://assets/images/ui/noteSplashes.tres")
-
-# VOICES
+## VOICES
 @onready var voices_opponent = $VoicesOpponent
 @onready var voices_player = $VoicesPlayer
 
-# GROUPS
+## GROUPS
 @onready var note_group = $UI/NoteGroup
 @onready var strum_group = $UI/StrumGroup
 
-# HEALTH
+## HEALTH
 @onready var health_bar = $UI/HUD/HealthBar
+@onready var health_icons:Dictionary[String, HealthIcon] = {
+	"p1": $UI/HUD/HealthBar/IconP1, # PLAYER
+	"p2": $UI/HUD/HealthBar/IconP2 # OPPONENT
+}
 
-# GAMEPLAY
+## CHARACTERS
+@onready var characters:Dictionary[String, Character] = {
+	"player": $Player,
+	"gf": $Girlfriend,
+	"opponent": $Opponent
+}
+
+## OTHER
+@onready var countdown_timer = $CountdownTimer
+
+## GAMEPLAY
 var botplay:bool = false
+var song_started:bool = false
 
 func _ready():
 	strum_group.generate_strums()
@@ -24,18 +36,68 @@ func _ready():
 	var err:String = Song.load_song()
 	if err: OS.alert(err, "SONG LOAD ERROR")
 	
+	# CHARACTERS
+	characters["player"].load_character(Song.characters["player"], true)
+	characters["opponent"].load_character(Song.characters["opponent"], false)
+	
 	# HEALTH
 	health_bar.value = 50
-	if Preferences.downscroll: health_bar.position.y = 150
+	health_bar.position.y = Global.SCREEN_SIZE.y
+	if !Preferences.downscroll: health_bar.position.y *= 0.89
+	else: health_bar.position.y *= 0.11
 	
+	# ICONS
+	health_icons["p1"].load_icon(characters["player"].data.health_icon)
+	health_icons["p2"].load_icon(characters["opponent"].data.health_icon)
+	
+	# CONDUCTOR
+	Conductor.beatHit.connect(beat_hit)
+	Conductor.stream = Song.song["Inst"]
+	Conductor.set_bpm(Song.bpm)
+	
+	# COUNTDOWN TIMER
+	countdown_timer.connect("timeout", countdown_tick)
+	countdown_timer.wait_time = Conductor.step_per_beat
+	countdown_timer.start()
+
+func _process(delta):
+	update_icons_position()
+
+var counter:int = -1
+func countdown_tick():
+	counter += 1
+	match counter:
+		0: pass
+		1: pass
+		2: pass
+		3: pass
+		4: 
+			countdown_timer.stop()
+			start_song()
+
+func start_song():
+	# VOICES
 	for i in Song.song.keys():
 		if i == "Inst": continue
 		var child = find_child(i)
 		child.stream = Song.song[i]
 		child.play()
-	Conductor.stream = Song.song["Inst"]
-	Conductor.set_bpm(Song.bpm)
+	
+	# START SONG
 	Conductor.play()
+	song_started = true
+
+func update_icons_position():
+	health_icons["p1"].position.x = (
+		health_bar.bar_middle +
+		(150 * health_icons["p1"].scale.x - 150) / 2 - 26)
+	health_icons["p2"].position.x = (
+		health_bar.bar_middle -
+		(150 * health_icons["p2"].scale.x) / 2 - 26 * 2)
+	#health_icons["p1"].position.x = health_bar.bar_middle + 51
+	#health_icons["p2"].position.x = health_bar.bar_middle - (51 + 150)
+
+#region NOTES
 
 func judge_note(diff) -> Dictionary:
 	for i in Preferences.judge_window.keys():
@@ -87,3 +149,10 @@ func miss_note(note:Note, kill:bool = false):
 	
 	if kill:
 		NoteGroup.remove_note(note)
+
+#endregion
+
+func beat_hit(beat:int) -> void:
+	if beat % 2 == 0:
+		health_icons["p1"].scale = Vector2(1.2, 1.2)
+		health_icons["p2"].scale = Vector2(1.2, 1.2)

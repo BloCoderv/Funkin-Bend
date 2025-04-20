@@ -153,8 +153,8 @@ func judge_note(diff) -> Dictionary:
 	return {"name": "shit", "percent": 0.0, "score": 50}
 
 func player_hit(note:Note):
-	var strum = StrumGroup.player_strums[note.data]
-	strum.play("confirm%s" % strum.data)
+	var strum:StrumNote = StrumGroup.player_strums[note.data]
+	strum.play_anim("confirm")
 	
 	note.was_hit = true
 	if note.is_sustain: 
@@ -179,11 +179,11 @@ func player_hit(note:Note):
 	update_scores()
 
 func opponent_hit(note:Note):
-	var strum = StrumGroup.player_strums[note.data]
+	var strum:StrumNote = StrumGroup.player_strums[note.data]
 	if Preferences.opponent_hit:
-		strum.play("confirm%s" % strum.data)
+		strum.play_anim("confirm")
 	note.was_hit = true
-	if note.is_sustain: 
+	if note.is_sustain:
 		note.is_holding = true
 		note.self_modulate.a = 0.0
 	else: NoteGroup.remove_note(note)

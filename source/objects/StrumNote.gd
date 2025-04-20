@@ -4,9 +4,10 @@ class_name StrumNote
 @onready var playstate:PlayState = get_tree().current_scene
 
 var note_in_strum:Note = null
-var splash:AnimatedSprite2D = null
+var splashes:AnimatedSprite2D = null
 
 var data:int = 0
+var direction:String = "Left"
 
 var opponent:bool = false
 var downscroll:bool = false
@@ -14,29 +15,37 @@ var downscroll:bool = false
 var reset_time:float = 0.0 # RETURN TO 'STATIC' ANIMATION
 
 func _ready():
-	play("strum%s" % data)
+	# DIRECTION
+	match data:
+		# 0: "Left"
+		1: direction = "Down"
+		2: direction = "Up"
+		3: direction = "Right"
+	play_anim("static")
+	
 	if !opponent or Preferences.opponent_splashes:
-		splash_setup()
+		splashes_setup()
 
-func splash_setup():
-	splash = AnimatedSprite2D.new()
-	splash.sprite_frames = Global.SPLASHES_TEXTURE
-	splash.modulate.a = Preferences.splash_opacity
-	splash.visible = false
-	splash.animation_finished.connect(
+func splashes_setup():
+	splashes = AnimatedSprite2D.new()
+	splashes.sprite_frames = Global.SPLASHES_TEXTURE
+	splashes.modulate.a = Preferences.splash_opacity
+	splashes.visible = false
+	splashes.animation_finished.connect(
 		func():
-			splash.visible = false
+			splashes.visible = false
 	)
-	splash.scale = Vector2(1.3, 1.3)
-	add_child(splash)
+	splashes.scale = Vector2(1.3, 1.3)
+	add_child(splashes)
 
 func _process(delta):
 	if reset_time > 0:
 		reset_time -= delta
 		if reset_time <= 0:
 			reset_time = 0.0
-			play("strum%s" % data)
+			play_anim("static")
 
+# PLAYER STUFF
 func _input(event):
 	if opponent or playstate.botplay: return
 	
@@ -44,20 +53,23 @@ func _input(event):
 		if note_in_strum:
 			playstate.player_hit(note_in_strum)
 		else:
-			play("press%s" % data)
+			play_anim("press")
 	if Input.is_action_just_released("note%s" % data):
-		play("strum%s" % data)
+		play_anim("static")
 		if note_in_strum:
 			NoteGroup.check_sustain_hit(note_in_strum, get_tree().current_scene)
 
+func play_anim(anim:String):
+	var anim_to_play:String = anim + direction
+	if sprite_frames.has_animation(anim_to_play):
+		play(anim_to_play)
+
 func splash_note():
-	if !splash: return
+	if !splashes: return
 	
-	splash.visible = true
-	var color = "purple"
+	splashes.visible = true
 	var id = randi_range(1, 2)
-	match data:
-		1: color = "blue"
-		2: color = "green"
-		3: color = "red"
-	splash.play("note impact {0} {1}".format([ id, color ]))
+	splashes.play("noteImpact{0}{1}".format([ direction, id ]))
+
+func splash_hold_note():
+	pass

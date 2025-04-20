@@ -8,7 +8,8 @@ var strum_data:int = 0
 var data:int = 0
 
 var time:float = 0.0
-var length:float = 330.0
+var length:float = 0.0
+var full_length:float = 0.0
 
 var must_press:bool = true # if true, note is from player
 var was_hit:bool = false
@@ -20,7 +21,7 @@ var is_holding:bool = false
 var pivot:Vector2 = Vector2.ZERO # pivot in middle
 
 var texture_size:Vector2 = Vector2.ZERO
-var default_sustain_size:float = 0.0
+var end_tex:AtlasTexture = null
 
 func _ready():
 	while StrumGroup.strum_notes.size() - 1 < strum_data:
@@ -38,31 +39,32 @@ func _ready():
 		return
 	
 	var textures:Array = Global.get_hold_textures(strum_data)
-	sustain.texture = textures[0]
-	sustain_end.texture = textures[1]
 	
+	sustain.texture = textures[0]
 	sustain.size.x = sustain.texture.get_size().x
 	
-	default_sustain_size = sustain_end.texture.get_size().y
+	# SUSTAIN END
+	end_tex = AtlasTexture.new()
+	end_tex.atlas = textures[1]
+	sustain_end.texture = end_tex
 	
 	if StrumGroup.player_strums[strum_data].downscroll:
 		sustain.scale.y *= -1
 		sustain_end.scale.y *= -1
 	
 	change_sustain_height(
-	NoteGroup.get_sustain_height(length)
-	)
+	NoteGroup.get_sustain_height(length))
 
 func get_sustain_size() -> float:
-	return sustain.size.y + 52
+	return sustain.size.y + (58 + end_tex.margin.position.y)
 
 func change_sustain_height(new:float):
-	sustain.size.y = new
-	var alp = min(0.6, length / 250)
-	sustain.modulate.a = alp
-	sustain_end.modulate.a = alp
+	sustain.size.y = new - 58
+	if new - 58 <= 0:
+		end_tex.margin.position.y = new - 58
+	
 	if StrumGroup.player_strums[strum_data].downscroll:
-		sustain_end.position.y = new - sustain.position.y
+		sustain_end.position.y = sustain.size.y - sustain.position.y
 		sustain_end.position.y *= -1
 	else:
-		sustain_end.position.y = new + sustain.position.y
+		sustain_end.position.y = sustain.size.y + sustain.position.y

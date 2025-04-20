@@ -34,18 +34,22 @@ func get_hold_textures(data:int):
 	
 	var tex_size = NOTE_HOLD.get_size().x / 8
 	
-	var hold = AtlasTexture.new()
-	var end = AtlasTexture.new()
+	var hold:Texture2D = AtlasTexture.new()
+	var end:Texture2D = AtlasTexture.new()
 	hold.atlas = NOTE_HOLD
 	end.atlas = NOTE_HOLD
 	
 	hold.region.size.x = tex_size
 	hold.region.position.x = data * (tex_size * 2)
+	
 	end.region = hold.region
 	end.region.position.x += tex_size
+	end.region.position.y = 7
+	end.region.size.y = 58
 	
-	end.margin.position.y = -15
-	end.margin.size.y = -35
+	# CONVERT TO IMAGE
+	hold = ImageTexture.create_from_image(hold.get_image())
+	end = ImageTexture.create_from_image(end.get_image())
 	
 	hold_textures[data] = [hold, end]
 	return [hold, end]

@@ -1,9 +1,11 @@
 extends Node
 
 var song:Dictionary[String, AudioStream] = {} # INST, VOICES
+
 var song_id:String = "bopeebo" # CAN CHANGE
-var song_name:String = "" # bopeebo
 var song_mix:String = "" # CAN CHANGE
+var song_name:String = ""
+
 var stage:String = "mainStage" # CAN CHANGE
 
 var scroll_speed:float = 0.0 # 1.0

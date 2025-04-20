@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bq105lpbm18fu"]
 
 [ext_resource type="Script" uid="uid://bkubi7qvpobwe" path="res://source/util/XML.gd" id="1_r68do"]
-[ext_resource type="Texture2D" uid="uid://c34b3hq6dnpyh" path="res://assets/images/ui/notes.png" id="2_d1p4n"]
+[ext_resource type="Texture2D" uid="uid://s0biu575ejrc" path="res://assets/images/ui/noteStrumline.png" id="2_d1p4n"]
 
 [node name="XML to SPRITEFRAMES" type="Node"]
 script = ExtResource("1_r68do")

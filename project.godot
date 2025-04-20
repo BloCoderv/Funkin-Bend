@@ -22,6 +22,11 @@ Global="*res://globals/Global.gd"
 Conductor="*res://globals/Conductor.gd"
 Preferences="*res://globals/Preferences.gd"
 
+[debug]
+
+settings/physics_interpolation/enable_warnings=false
+shapes/navigation/enable_agent_paths_xray=false
+
 [display]
 
 window/size/viewport_width=1280
@@ -57,8 +62,17 @@ note3={
 ]
 }
 
+[physics]
+
+jolt_physics_3d/simulation/use_enhanced_internal_edge_removal=false
+jolt_physics_3d/simulation/allow_sleep=false
+jolt_physics_3d/simulation/body_pair_contact_cache_enabled=false
+jolt_physics_3d/motion_queries/use_enhanced_internal_edge_removal=false
+2d/default_gravity=-4096.0
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+camera/depth_of_field/depth_of_field_bokeh_quality=0
 anti_aliasing/quality/use_debanding=true

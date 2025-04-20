@@ -10,7 +10,8 @@ region = Rect2(157, 0, 154, 157)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cqipr"]
 atlas = ExtResource("3_jmgd2")
-region = Rect2(0, 0, 52, 0)
+region = Rect2(52, 0, 52, 87)
+margin = Rect2(0, -15, 0, -35)
 
 [node name="Note" type="TextureRect"]
 texture = SubResource("AtlasTexture_2x7qj")
@@ -30,9 +31,8 @@ stretch_mode = 1
 modulate = Color(1, 1, 1, 0.6)
 layout_mode = 0
 offset_left = 51.0
-offset_top = 78.5
+offset_top = 102.0
 offset_right = 103.0
-offset_bottom = 130.5
+offset_bottom = 178.0
 texture = SubResource("AtlasTexture_cqipr")
-expand_mode = 1
-stretch_mode = 6
+stretch_mode = 2

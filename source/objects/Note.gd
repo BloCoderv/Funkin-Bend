@@ -20,6 +20,7 @@ var is_holding:bool = false
 var pivot:Vector2 = Vector2.ZERO # pivot in middle
 
 var texture_size:Vector2 = Vector2.ZERO
+var default_sustain_size:float = 0.0
 
 func _ready():
 	while StrumGroup.strum_notes.size() - 1 < strum_data:
@@ -41,7 +42,8 @@ func _ready():
 	sustain_end.texture = textures[1]
 	
 	sustain.size.x = sustain.texture.get_size().x
-	sustain_end.size = sustain_end.texture.get_size()
+	
+	default_sustain_size = sustain_end.texture.get_size().y
 	
 	if StrumGroup.player_strums[strum_data].downscroll:
 		sustain.scale.y *= -1
@@ -52,15 +54,15 @@ func _ready():
 	)
 
 func get_sustain_size() -> float:
-	return sustain.size.y + sustain_end.size.y
+	return sustain.size.y + 52
 
 func change_sustain_height(new:float):
-	var diff = new - sustain_end.size.y
-	sustain.size.y = new + diff
-	if diff <= 0:
-		sustain_end.size.y = new + diff
+	sustain.size.y = new
+	var alp = min(0.6, length / 250)
+	sustain.modulate.a = alp
+	sustain_end.modulate.a = alp
 	if StrumGroup.player_strums[strum_data].downscroll:
-		sustain_end.position.y = sustain.size.y - sustain.position.y
+		sustain_end.position.y = new - sustain.position.y
 		sustain_end.position.y *= -1
 	else:
-		sustain_end.position.y = sustain.size.y + sustain.position.y
+		sustain_end.position.y = new + sustain.position.y

@@ -46,7 +46,10 @@ static func check_sustain_hit(note:Note, playstate:PlayState):
 static func get_sustain_height(length:float) -> float:
 	return length * Util.PIXEL_PER_MS * Song.scroll_speed
 
+static var skip:int = 0
 static func sustain_hold_loop(strum:StrumNote):
+	if strum.animation != "confirm" + str(strum.data):
+		strum.play("confirm" + str(strum.data))
 	strum.frame = 0 if strum.frame else 1
 
 func spawn_notes_of(timeMS:float):
@@ -106,21 +109,25 @@ func _physics_process(delta):
 		if note.too_late: continue
 		
 		if Conductor.song_position - note.time > invalid_offset:
-			if note.must_press and !playstate.botplay and !note.is_sustain:
+			if note.must_press and !playstate.botplay and (
+			!note.is_sustain or !note.was_hit):
 				playstate.miss_note(note.strum_data, note)
 				note.too_late = true
+				if note_strum.note_in_strum == note:
+					note_strum.note_in_strum = null
 				invalidate_note(note)
 		
 		# PLAYER STUFF
 		if note.must_press and !playstate.botplay and playstate.song_started:
 			if (
 				!note.was_hit
+				and !note.too_late
 				and note.time > Conductor.song_position - safe_offset 
 				and note.time < Conductor.song_position + safe_offset
 			):
 				note.can_hit = true
 				if (
-					!note_strum.note_in_strum 
+					!note_strum.note_in_strum
 					or note_strum.note_in_strum.time > note.time
 					or note_strum.note_in_strum.was_hit
 				):
@@ -129,10 +136,11 @@ func _physics_process(delta):
 				note.can_hit = false
 			
 			# OFFSET SUSTAIN
-			if Conductor.song_position >= note.time and !note.is_holding:
+			if Conductor.song_position >= note.time and (
+			!note.is_holding and !note.too_late):
 				note.length -= delta_ms
 			
-			if note.was_hit and note.is_sustain and note.is_holding:
+			if note.was_hit and note.is_sustain and note.is_holding and !note.too_late:
 				if note.length > 0:
 					note.length -= delta_ms
 					sustain_hold_loop(note_strum)

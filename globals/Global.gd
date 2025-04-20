@@ -44,5 +44,8 @@ func get_hold_textures(data:int):
 	end.region = hold.region
 	end.region.position.x += tex_size
 	
+	end.margin.position.y = -15
+	end.margin.size.y = -35
+	
 	hold_textures[data] = [hold, end]
 	return [hold, end]

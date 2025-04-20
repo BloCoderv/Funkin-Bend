@@ -13,6 +13,7 @@
 script = ExtResource("1_b0ega")
 
 [node name="Camera" type="Camera2D" parent="."]
+z_index = 1
 
 [node name="CountdownTimer" type="Timer" parent="."]
 process_callback = 0
@@ -22,6 +23,11 @@ autoplay = true
 
 [node name="VoicesPlayer" type="AudioStreamPlayer" parent="."]
 autoplay = true
+
+[node name="Stageback" type="Sprite2D" parent="."]
+position = Vector2(4, 17)
+scale = Vector2(0.576563, 0.632857)
+texture = ExtResource("5_4wsi4")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -38,11 +44,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="Stageback" type="Sprite2D" parent="UI/HUD"]
-position = Vector2(670, 345)
-scale = Vector2(0.576563, 0.632857)
-texture = ExtResource("5_4wsi4")
 
 [node name="HealthBar" parent="UI/HUD" instance=ExtResource("5_paqu8")]
 layout_mode = 1

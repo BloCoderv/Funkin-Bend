@@ -59,7 +59,7 @@ func load_song() -> String:
 	scroll_speed = chart["scrollSpeed"][difficulty]
 	
 	NoteGroup.invalid_offset = max(
-	Conductor.step_per_beat * 1000, 350 / scroll_speed)
+	Conductor.beat_step * 1000, 350 / scroll_speed)
 	NoteGroup.load_notes()
 	NoteGroup.safe_offset = (Preferences.safe_offset / 60) * 1000
 	

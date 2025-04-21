@@ -67,7 +67,7 @@ func popup_rating(rat:String):
 	var tw = create_tween().set_process_mode(
 		Tween.TWEEN_PROCESS_PHYSICS)
 	tw.tween_property(rating, "modulate:a", 0, 0.2).set_delay(
-		Conductor.step_per_beat)
+		Conductor.sec_per_beat)
 	rating.set_meta("tween", tw)
 
 func popup_combo(combo:int):
@@ -101,7 +101,7 @@ func popup_combo(combo:int):
 		# TWEEN
 		var tw = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 		tw.tween_property(combo_node, "modulate:a", 0, 0.2).set_delay(
-			Conductor.step_per_beat * 2)
+			Conductor.sec_per_beat * 2)
 		combo_node.set_meta("tween", tw)
 
 func get_combo_number(num:String) -> Texture2D:

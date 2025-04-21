@@ -75,7 +75,7 @@ func _physics_process(delta):
 	var delta_ms:float = delta * 1000
 	
 	if Preferences.opponent_hit:
-		strum_anim_time = Conductor.step_per_beat * 1.75
+		strum_anim_time = Conductor.beat_step * 1.75
 	else: strum_anim_time = 0.001
 	
 	for note in notes:

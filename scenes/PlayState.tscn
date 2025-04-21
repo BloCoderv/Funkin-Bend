@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://ddrywk1jny7yg"]
+[gd_scene load_steps=11 format=3 uid="uid://ddrywk1jny7yg"]
 
 [ext_resource type="Script" uid="uid://bq2vjtoycd6k2" path="res://source/PlayState/PlayState.gd" id="1_b0ega"]
+[ext_resource type="Script" uid="uid://cr7o3260vyosq" path="res://source/objects/Countdown.gd" id="2_rwnde"]
 [ext_resource type="Script" uid="uid://xfdqhbnnhq6p" path="res://source/PlayState/NoteGroup.gd" id="2_xq65u"]
 [ext_resource type="Script" uid="uid://pqmqd4ymy621" path="res://source/PlayState/StrumGroup.gd" id="3_l02w5"]
 [ext_resource type="Texture2D" uid="uid://udqae1fkp73e" path="res://assets/images/stages/week1/stageback.png" id="5_4wsi4"]
@@ -18,6 +19,7 @@ z_index = 1
 
 [node name="CountdownTimer" type="Timer" parent="."]
 process_callback = 0
+script = ExtResource("2_rwnde")
 
 [node name="VoicesOpponent" type="AudioStreamPlayer" parent="."]
 autoplay = true
@@ -47,6 +49,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Countdown" type="Sprite2D" parent="UI/HUD"]
+position = Vector2(640, 360)
 
 [node name="HealthBar" parent="UI/HUD" instance=ExtResource("5_paqu8")]
 layout_mode = 1
@@ -111,3 +116,5 @@ metadata/_custom_type_script = "uid://kcdcy05olunk"
 [node name="Opponent" type="AnimatedSprite2D" parent="."]
 script = ExtResource("7_4wsi4")
 metadata/_custom_type_script = "uid://kcdcy05olunk"
+
+[connection signal="timeout" from="CountdownTimer" to="CountdownTimer" method="countdown_tick"]

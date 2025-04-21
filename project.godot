@@ -21,6 +21,7 @@ Song="*res://globals/Song.gd"
 Global="*res://globals/Global.gd"
 Conductor="*res://globals/Conductor.gd"
 Preferences="*res://globals/Preferences.gd"
+Audio="*res://globals/Audio.tscn"
 
 [debug]
 

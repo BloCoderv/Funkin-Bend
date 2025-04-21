@@ -29,7 +29,7 @@ class_name PlayState
 }
 
 ## OTHER
-@onready var countdown_timer = $CountdownTimer
+@onready var countdown = $CountdownTimer
 @onready var score_txt = $UI/HUD/ScoreTxt
 
 ## GAMEPLAY
@@ -81,25 +81,14 @@ func _ready():
 	Conductor.beatHit.connect(beat_hit)
 	Conductor.sectionHit.connect(section_hit)
 	
-	Conductor.stream = Song.song["Inst"]
 	Conductor.set_bpm(Song.bpm)
+	Conductor.stream = Song.song["Inst"]
+	Conductor.bus = "Inst"
+	#Conductor.song_position = 
 	
-	# COUNTDOWN TIMER
-	countdown_timer.connect("timeout", countdown_tick)
-	countdown_timer.wait_time = Conductor.step_per_beat
-	countdown_timer.start()
-
-var counter:int = -1
-func countdown_tick():
-	counter += 1
-	match counter:
-		0: print(3)
-		1: print(2)
-		2: print(1)
-		3: print("GO!")
-		4: 
-			countdown_timer.stop()
-			start_song()
+	# COUNTDOWN
+	countdown.wait_time = Conductor.sec_per_beat
+	countdown.start()
 
 func start_song():
 	# VOICES

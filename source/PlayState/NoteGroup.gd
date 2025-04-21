@@ -144,7 +144,7 @@ func _physics_process(delta):
 				note.length = note_length
 			
 			if note.was_hit and note.is_sustain and note.is_holding and !note.too_late:
-				if note.length > 0:
+				if note.length > 10:
 					note.length = note_length
 					sustain_hold_loop(note_strum)
 				else:
@@ -158,7 +158,7 @@ func _physics_process(delta):
 				# OPPONENT HIT ANIMATION TIME
 				if !note.is_sustain: note_strum.reset_time = strum_anim_time
 			if note.was_hit and note.is_sustain:
-				if note.length > 0:
+				if note.length > 10:
 					note.length = note_length
 					if Preferences.opponent_hit:
 						sustain_hold_loop(note_strum)
@@ -173,7 +173,7 @@ func _physics_process(delta):
 				playstate.player_hit(note)
 				if !note.is_sustain: note_strum.reset_time = strum_anim_time
 			if note.was_hit and note.is_sustain:
-				if note.length > 0:
+				if note.length > 10:
 					note.length = note_length
 					sustain_hold_loop(note_strum)
 				else:

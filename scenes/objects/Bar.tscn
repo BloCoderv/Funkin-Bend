@@ -1,15 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://duumxr33dyeeu"]
+[gd_scene load_steps=3 format=3 uid="uid://duumxr33dyeeu"]
 
 [ext_resource type="Script" uid="uid://ccc1wgoxhncpy" path="res://source/objects/Bar.gd" id="1_epq4u"]
 [ext_resource type="Texture2D" uid="uid://c33vpgwadth1w" path="res://assets/images/ui/healthBar.png" id="1_ovpq0"]
-[ext_resource type="Shader" uid="uid://cbmuvlh46s3f0" path="res://shaders/color_mask.gdshader" id="1_yomn6"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_e82mj"]
-shader = ExtResource("1_yomn6")
-shader_parameter/threshold = 1.7
 
 [node name="Bar" type="TextureRect"]
-material = SubResource("ShaderMaterial_e82mj")
 texture = ExtResource("1_ovpq0")
 script = ExtResource("1_epq4u")
 

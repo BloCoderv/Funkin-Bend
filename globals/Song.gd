@@ -2,15 +2,15 @@ extends Node
 
 var song:Dictionary[String, AudioStream] = {} # INST, VOICES
 
-var song_id:String = "bopeebo" # CAN CHANGE
-var song_mix:String = "" # CAN CHANGE
+var song_id:String = "dadbattle" # CAN CHANGE
+var song_mix:String = "erect" # CAN CHANGE
 var song_name:String = ""
 
 var stage:String = "mainStage" # CAN CHANGE
 
 var scroll_speed:float = 0.0 # 1.0
 var bpm:float = 0.0 # 100.0
-var difficulty:String = "hard" # CAN CHANGE
+var difficulty:String = "nightmare" # CAN CHANGE
 
 var chart_notes:Array = []
 var chart_events:Array = []

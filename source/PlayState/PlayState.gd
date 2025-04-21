@@ -1,7 +1,7 @@
 extends Node2D
 class_name PlayState
 
-# CAMERAS
+## CAMERAS
 @onready var Cam_HUD:CanvasLayer = $UI
 @onready var Camera:Camera2D = $Camera
 
@@ -10,8 +10,9 @@ class_name PlayState
 @onready var voices_player = $VoicesPlayer
 
 ## GROUPS
-@onready var note_group = $UI/NoteGroup
-@onready var strum_group = $UI/StrumGroup
+@onready var note_group:NoteGroup = $UI/NoteGroup
+@onready var strum_group:StrumGroup = $UI/StrumGroup
+@onready var popup_group:PopupGroup = $UI/PopupGroup
 
 ## HEALTH
 @onready var health_bar = $UI/HUD/HealthBar
@@ -42,6 +43,7 @@ var default_cam_zoom:float = 1
 var song_score:int = 0
 var song_hits:int = 0
 var song_misses:int = 0
+var combo:int = 0
 
 ## RATING
 var rating_percent:float = 0.0
@@ -172,9 +174,14 @@ func player_hit(note:Note):
 	total_notes_hit += rating["percent"]
 	total_played += 1
 	
+	popup_group.popup_rating(rating["name"])
+	
 	# SCORES
 	song_hits += 1
 	song_score += rating["score"]
+	combo += 1
+	
+	popup_group.popup_combo(combo)
 	
 	update_scores()
 
@@ -200,6 +207,7 @@ func miss_note(direction:int, note:Note = null, kill:bool = false):
 	
 	# RATING
 	total_played += 1
+	combo = 0
 	
 	if kill: NoteGroup.remove_note(note)
 	update_scores()

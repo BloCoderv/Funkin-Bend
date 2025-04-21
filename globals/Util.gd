@@ -6,7 +6,7 @@ const HEALTH_LOSS = 4
 
 const PIXEL_PER_MS = 0.45
 
-static func floor_decimals(val:float, decimals:int) -> float:
+static func floor_decimals(val:float, decimals:int):
 	var result:float = floor(val * pow(10, decimals)) / pow(10, decimals)
 	if decimals < 1:
 		return floor(val)

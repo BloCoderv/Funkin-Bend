@@ -13,6 +13,10 @@ const SCREEN_SIZE = Vector2(1280, 720)
 func _ready():
 	RenderingServer.set_default_clear_color(Color.BLACK)
 	
+	if Preferences.auto_pause:
+		setup_auto_pause()
+
+func setup_auto_pause():
 	get_viewport().get_window().focus_entered.connect(
 		func(): 
 			if get_tree():

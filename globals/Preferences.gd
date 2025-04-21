@@ -12,7 +12,13 @@ var safe_offset:float = 10.0
 
 var splash_opacity:float = 0.6
 
+var combo_offset:Vector2 = Vector2.ZERO
+var rating_offset:Vector2 = Vector2.ZERO
+
 var notes_behind_strum:bool = false
 
-# JUDGEMENTS
+var popup_limit:int = 1
+
+var auto_pause:bool = false
+
 var judge_window:Dictionary = {"sick": 45, "good": 90, "bad": 135}

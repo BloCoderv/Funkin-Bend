@@ -40,3 +40,5 @@ func _physics_process(delta):
 			beatHit.emit(beat)
 		if prev_section != section:
 			sectionHit.emit(section)
+	elif Conductor.song_position < 0:
+		Conductor.song_position += delta * 1000

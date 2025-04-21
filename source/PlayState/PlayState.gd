@@ -84,7 +84,7 @@ func _ready():
 	Conductor.set_bpm(Song.bpm)
 	Conductor.stream = Song.song["Inst"]
 	Conductor.bus = "Inst"
-	#Conductor.song_position = 
+	Conductor.song_position = -Conductor.sec_per_beat * 1000 * 5
 	
 	# COUNTDOWN
 	countdown.wait_time = Conductor.sec_per_beat

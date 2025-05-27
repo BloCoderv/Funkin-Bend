@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b0awq63q7c2c1"]
 
-[ext_resource type="Script" uid="uid://dtxxe6r5rcw1v" path="res://source/objects/PopupGroup.gd" id="1_bjw32"]
+[ext_resource type="Script" uid="uid://dtxxe6r5rcw1v" path="res://source/PlayState/PopupGroup.gd" id="1_bjw32"]
 
 [node name="PopupScore" type="Node"]
 script = ExtResource("1_bjw32")

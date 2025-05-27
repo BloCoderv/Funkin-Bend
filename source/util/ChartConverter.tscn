@@ -1,0 +1,157 @@
+[gd_scene load_steps=10 format=3 uid="uid://cuyih84lc2b32"]
+
+[ext_resource type="Script" uid="uid://vjkito1pichj" path="res://source/util/ChartConverter.gd" id="1_ap4yx"]
+[ext_resource type="Texture2D" uid="uid://ipbntrekdb3" path="res://assets/images/menu/menuDesat.png" id="2_ogypa"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ap4yx"]
+bg_color = Color(0, 0, 0, 0.6)
+
+[sub_resource type="Theme" id="Theme_ogypa"]
+/styles/1 = SubResource("StyleBoxFlat_ap4yx")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b3vos"]
+bg_color = Color(0, 0, 0, 0.545098)
+corner_radius_top_left = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pl0vx"]
+bg_color = Color(0, 0, 0, 0.6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kvlyj"]
+bg_color = Color(0, 0, 0, 0.6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8c7he"]
+bg_color = Color(0, 0, 0, 0.6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_870pc"]
+bg_color = Color(0, 0, 0, 0.6)
+
+[node name="ChartConverter" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ap4yx")
+
+[node name="BG" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_ogypa")
+
+[node name="Path" type="Button" parent="."]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 232.0
+offset_right = 640.0
+offset_bottom = 281.0
+text = "Data Path : res://"
+alignment = 0
+
+[node name="Convert" type="Button" parent="."]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 648.0
+offset_right = 220.0
+offset_bottom = 696.0
+theme_override_font_sizes/font_size = 24
+text = "CONVERT"
+
+[node name="DelFiles" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 601.0
+offset_right = 243.0
+offset_bottom = 632.0
+text = "Delete Files"
+
+[node name="Panel" type="Panel" parent="DelFiles"]
+show_behind_parent = true
+layout_mode = 0
+offset_right = 123.0
+offset_bottom = 31.0
+
+[node name="Type" type="OptionButton" parent="."]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 130.0
+offset_right = 331.0
+offset_bottom = 179.0
+theme = SubResource("Theme_ogypa")
+theme_override_font_sizes/font_size = 20
+selected = 0
+item_count = 3
+popup/item_0/text = "NEW"
+popup/item_0/id = 0
+popup/item_1/text = "OLD"
+popup/item_1/id = 1
+popup/item_2/text = "PSYCH"
+popup/item_2/id = 2
+
+[node name="Label" type="Label" parent="Type"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -152.0
+offset_top = -24.5
+offset_right = -8.0
+offset_bottom = 24.5
+grow_vertical = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_b3vos")
+text = "Convert Type"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Mix" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 74.0
+offset_top = 305.0
+offset_right = 534.0
+offset_bottom = 355.0
+theme_override_styles/focus = SubResource("StyleBoxFlat_pl0vx")
+theme_override_styles/normal = SubResource("StyleBoxFlat_kvlyj")
+placeholder_text = "erect"
+
+[node name="Label" type="Label" parent="Mix"]
+layout_mode = 0
+offset_left = -48.0
+offset_bottom = 50.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_8c7he")
+text = "Mix:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -640.0
+offset_top = 24.0
+offset_right = 640.0
+offset_bottom = 52.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_870pc")
+text = "An error ocurred!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a Directory"
+initial_position = 1
+ok_button_text = "Select Current Folder"
+file_mode = 2
+access = 2
+
+[connection signal="button_down" from="Path" to="." method="_path_pressed"]
+[connection signal="pressed" from="Convert" to="." method="_on_convert_pressed"]
+[connection signal="toggled" from="DelFiles" to="." method="_on_del_files_toggled"]
+[connection signal="item_selected" from="Type" to="." method="_on_type_item_selected"]
+[connection signal="canceled" from="FileDialog" to="." method="_on_file_dialog_canceled"]
+[connection signal="confirmed" from="FileDialog" to="." method="_on_file_dialog_confirmed"]
+[connection signal="custom_action" from="FileDialog" to="." method="_on_file_dialog_custom_action"]

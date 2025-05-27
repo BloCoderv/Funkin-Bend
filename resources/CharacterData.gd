@@ -1,12 +1,16 @@
 extends Resource
 class_name CharacterData
 
-@export var image:String = ""
+@export var image_path:String = ""
 @export var scale:Vector2 = Vector2.ONE
 @export var flip_x:bool = false
 @export var position:Vector2 = Vector2.ZERO
 
 @export var animations:Array = []
+@export var sprites:SpriteFrames = null
+@export var offsets:Dictionary[String, Vector2] = {}
+
+@export var sing_duration:int = 4
 
 @export var health_icon:String = "face"
 @export var health_color:Color = Color(1, 0, 0)
@@ -16,30 +20,55 @@ static func convert_from_json(path:String, save_to:String) -> CharacterData:
 	var json = FileAccess.open(path, FileAccess.READ)
 	var data = JSON.parse_string(json.get_as_text()) as Dictionary
 	json.close()
+
+	var res = CharacterData.new()
 	
-	var res:CharacterData = null
-	if !FileAccess.file_exists(save_to + ".tres"):
-		res = CharacterData.new()
-	else:
-		res = ResourceLoader.load(save_to + ".tres", "Resource", ResourceLoader.CACHE_MODE_IGNORE)
-		var err = DirAccess.remove_absolute(save_to + ".tres")
-		if err:
-			OS.alert("CharacterData - convert json - remove error: " + err)
-			return
+	var anim_path:String = "res://assets/images/" + data["image"]
 	
-	res.image = data["image"]
+	res.image_path = anim_path
 	res.scale = Vector2(data["scale"], data["scale"])
 	res.flip_x = data["flip_x"]
+	res.sing_duration = data["sing_duration"]
+	
+	res.position = Vector2(
+		data["position"][0], data["position"][1]
+	)
 	
 	res.health_icon = data["healthicon"]
 	
 	var colors:Array = data["healthbar_colors"]
 	res.health_color = Color(
 		colors[0] / 255.0,
-		colors[0] / 255.0,
-		colors[0] / 255.0)
+		colors[1] / 255.0,
+		colors[2] / 255.0
+	)
 	
-	res.animations = data["animations"]
+	# ANIMATIONS
+	res.sprites = SpriteFrames.new()
+	for anim in data["animations"]:
+		# LOADING
+		if anim["indices"]: XML.add_by_indices(
+			res.sprites, anim_path, anim["anim"],
+			anim["name"], anim["indices"], anim["fps"], anim["loop"]
+		)
+		else: XML.add_by_prefix(
+			res.sprites, anim_path, anim["anim"],
+			anim["name"], anim["fps"], anim["loop"]
+		)
+		
+		# OFFSETS
+		res.offsets[ anim["anim"] ] = Vector2(
+			anim["offsets"][0], anim["offsets"][1]
+		)
+		
+		# ANIMATIONS
+		res.animations.append({
+			"name": anim["anim"],
+			"prefix": anim["name"],
+			"fps": anim["fps"],
+			"loop": anim["loop"],
+			"indices": anim["indices"]
+		})
 	
 	ResourceSaver.save(res, save_to + ".tres")
 	data = null
@@ -49,3 +78,19 @@ static func convert_from_json(path:String, save_to:String) -> CharacterData:
 		return
 	
 	return res
+
+static func load_sprites(image_path:String, anims:Dictionary) -> SpriteFrames:
+	var sprites:SpriteFrames = SpriteFrames.new()
+	
+	for anim in anims:
+		# LOADING
+		if anim["indices"]: XML.add_by_indices(
+			sprites, image_path, anim["name"], anim["prefix"], 
+			anim["indices"], anim["fps"], anim["loop"]
+		)
+		else: XML.add_by_prefix(
+			sprites, image_path, anim["name"],
+			anim["prefix"], anim["fps"], anim["loop"]
+		)
+	
+	return sprites

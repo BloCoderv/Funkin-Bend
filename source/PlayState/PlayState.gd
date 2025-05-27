@@ -224,9 +224,25 @@ func step_hit(step:int) -> void:
 func beat_hit(beat:int) -> void:
 	health_icons["p1"].scale = Vector2(1.2, 1.2)
 	health_icons["p2"].scale = Vector2(1.2, 1.2)
+	
+	Cam_HUD.scale += Vector2(0.015, 0.015)
+	Camera.zoom += Vector2(0.0075, 0.0075)
+	
+	character_bopper(beat)
 
 func section_hit(section:int) -> void:
 	Cam_HUD.scale += Vector2(0.03, 0.03)
 	Camera.zoom += Vector2(0.015, 0.015)
+
+func character_bopper(beat:int) -> void:
+	if beat % characters["player"].dance_beat_num \
+	and !characters["player"].is_singing:
+		characters["player"].dance()
+	if beat % characters["opponent"].dance_beat_num \
+	and !characters["opponent"].is_singing:
+		characters["opponent"].dance()
+	if beat % characters["gf"].dance_beat_num \
+	and !characters["gf"].is_singing:
+		characters["gf"].dance()
 
 #endregion

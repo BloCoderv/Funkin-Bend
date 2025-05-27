@@ -13,7 +13,7 @@ var full_length:float = 0.0
 
 var must_press:bool = true # if true, note is from player
 var was_hit:bool = false
-var is_sustain:bool = true
+var is_sustain:bool = false
 var can_hit:bool = false
 var too_late:bool = false
 var is_holding:bool = false

@@ -1,6 +1,7 @@
 extends Node2D
 class_name PlayState
 
+
 ## CAMERAS
 @onready var Cam_HUD:CanvasLayer = $UI
 @onready var Camera:Camera2D = $Camera
@@ -35,9 +36,12 @@ class_name PlayState
 ## GAMEPLAY
 var botplay:bool = false
 var song_started:bool = false
+var gf_speed:float = 1.0
 
 ## CAMERA
-var default_cam_zoom:float = 1
+var default_cam_zoom:float = 1.0
+var cam_target:Vector2 = Vector2.ZERO
+var camera_speed:float = 1.0
 
 ## PLAYER
 var song_score:int = 0
@@ -50,8 +54,19 @@ var rating_percent:float = 0.0
 var total_notes_hit:float = 0.0
 var total_played:int = 0
 
+
+func _physics_process(delta):
+	# CAMERAS
+	update_camera_position(delta)
+	
+	# EVENTS
+	_event_process()
+
 func _process(delta):
+	# ICONS
 	update_icons_position()
+	
+	# CAMERAS
 	update_cameras_zoom(delta)
 
 #region READY
@@ -62,9 +77,13 @@ func _ready():
 	var err:String = Song.load_song()
 	if err: OS.alert(err, "SONG LOAD ERROR")
 	
-	# CHARACTERS
-	characters["player"].load_character(Song.characters["player"], true)
-	characters["opponent"].load_character(Song.characters["opponent"], false)
+	# LOADING CHARACTERS
+	for char in characters:
+		if Song.characters.has(char):
+			characters[char].load_character(
+				Song.characters[char],
+				false if char == "opponent" else true)
+	characters["gf"].load_character(Song.characters["girlfriend"], false)
 	
 	# HEALTH
 	health_bar.value = 50
@@ -104,7 +123,7 @@ func start_song():
 
 #endregion
 
-#region UPDATES
+#region PROCESS
 
 func update_icons_position():
 	health_icons["p1"].position.x = (
@@ -113,6 +132,7 @@ func update_icons_position():
 	health_icons["p2"].position.x = (
 		health_bar.bar_middle -
 		(150 * health_icons["p2"].scale.x) / 2 - 26 * 2)
+
 func update_cameras_zoom(delta:float):
 	var mult:float = lerp(1.0, Cam_HUD.scale.x, exp(-delta * 3.125))
 	Cam_HUD.scale = Vector2(mult, mult)
@@ -120,6 +140,10 @@ func update_cameras_zoom(delta:float):
 	Cam_HUD.offset.y = Global.SCREEN_SIZE.y * (1.0 - mult) / 2
 	mult = lerp(default_cam_zoom, Camera.zoom.x, exp(-delta * 3.125))
 	Camera.zoom = Vector2(mult, mult)
+
+func update_camera_position(delta):
+	Camera.position = \
+	lerp(Camera.position, cam_target, 0.04 * camera_speed)
 
 #endregion
 
@@ -172,6 +196,8 @@ func player_hit(note:Note):
 	
 	popup_group.popup_combo(combo)
 	
+	player_sing(note.strum_data, note.is_sustain)
+	
 	update_scores()
 
 func opponent_hit(note:Note):
@@ -184,6 +210,7 @@ func opponent_hit(note:Note):
 		note.self_modulate.a = 0.0
 	else: NoteGroup.remove_note(note)
 	strum.splash_note()
+	opponent_sing(note.strum_data, note.is_sustain)
 
 func miss_note(direction:int, note:Note = null, kill:bool = false):
 	if !note or !note.is_sustain:
@@ -197,6 +224,9 @@ func miss_note(direction:int, note:Note = null, kill:bool = false):
 	# RATING
 	total_played += 1
 	combo = 0
+	
+	# CHAR
+	characters["player"].play_anim(Util.SING_ANIMS[note.strum_data] + "miss")
 	
 	if kill: NoteGroup.remove_note(note)
 	update_scores()
@@ -219,30 +249,122 @@ func calculate_rating():
 #region CONDUCTOR HITS
 
 func step_hit(step:int) -> void:
-	pass
-
-func beat_hit(beat:int) -> void:
 	health_icons["p1"].scale = Vector2(1.2, 1.2)
 	health_icons["p2"].scale = Vector2(1.2, 1.2)
 	
-	Cam_HUD.scale += Vector2(0.015, 0.015)
-	Camera.zoom += Vector2(0.0075, 0.0075)
-	
-	character_bopper(beat)
+	character_bopper(step)
+
+func beat_hit(beat:int) -> void:
+	pass
 
 func section_hit(section:int) -> void:
 	Cam_HUD.scale += Vector2(0.03, 0.03)
 	Camera.zoom += Vector2(0.015, 0.015)
 
 func character_bopper(beat:int) -> void:
-	if beat % characters["player"].dance_beat_num \
-	and !characters["player"].is_singing:
-		characters["player"].dance()
-	if beat % characters["opponent"].dance_beat_num \
-	and !characters["opponent"].is_singing:
-		characters["opponent"].dance()
-	if beat % characters["gf"].dance_beat_num \
-	and !characters["gf"].is_singing:
-		characters["gf"].dance()
+	for char in characters.keys():
+		var character:Character = characters[char]
+		
+		if char == "gf":
+			if beat % int(round(gf_speed * character.dance_beat_num))== 0 \
+			and !character.animation.begins_with(Util.SING_ANIM_ID):
+				character.dance()
+			continue
+		
+		if beat % character.dance_beat_num == 0 \
+		and !character.animation.begins_with(Util.SING_ANIM_ID):
+			character.dance()
+
+#endregion
+
+#region EVENTS
+
+func _event_process():
+	for ev in Song.chart_events["Funkin"]:
+		if ev[0] > Conductor.song_position: break
+		execute_event([ev[1], ev[2]])
+		Song.chart_events["Funkin"].erase(ev)
+	
+	for ev in Song.chart_events["Psych"]:
+		if ev[0] > Conductor.song_position: break
+		execute_event([ev[1], ev[2]])
+		Song.chart_events["Psych"].erase(ev)
+
+# event = [ name, values ]
+func execute_event(event:Array):
+	match event[0]:
+		"FocusCamera":
+			var values = event[1]
+			
+			var char = ""
+			match int(values["char"]):
+				0: char = "player"
+				1: char = "opponent"
+				2: char = "gf"
+			
+			var pos = Vector2(0, 0)
+			if values.has("x"):
+				pos.x = values["x"]
+			if values.has("y"):
+				pos.y = values["y"]
+			
+			var lerp = true
+			if values.has("ease"):
+				lerp = (values["ease"] != "INSTANT")
+			
+			camera_target(char, pos, lerp)
+
+#endregion
+
+#region CHARACTERS
+
+func player_sing(data:int, is_sustain:bool):
+	var anim:String = Util.SING_ANIMS[data]
+	characters["player"].hold_time = 0.0
+	characters["player"].is_holding = true
+	characters["player"].play_anim(anim)
+
+func opponent_sing(data:int, is_sustain:bool):
+	var anim:String = Util.SING_ANIMS[data]
+	characters["opponent"].hold_time = 0.0
+	characters["opponent"].play_anim(anim)
+	
+#endregion
+
+#region CAMERAS
+
+func camera_target(char:String, pos:Vector2 = Vector2.ZERO, lerp:bool = true):
+	var character:Character = null
+	var mid_point:Vector2 = Vector2.ZERO
+	var char_pos:Vector2 = Vector2.ZERO
+	
+	if char != "":
+		if !characters.has(char): 
+			printerr("%s not exists" % char)
+			return
+		
+		character = characters[char]
+		if character == null: return
+		
+		mid_point = character.get_mid_point()
+		char_pos = character.position
+	
+	if character == null:
+		cam_target = pos
+	elif character.is_player:
+		cam_target = Vector2(mid_point.x - 100, mid_point.y - 100)
+		cam_target.x -= character.data.camera_position.x - char_pos.x
+		cam_target.y += character.data.camera_position.y + char_pos.y
+		cam_target += pos
+	elif character.is_girlfriend:
+		cam_target = mid_point
+		cam_target += character.data.camera_position
+		cam_target += char_pos + pos
+	else: # OPPONENT
+		cam_target = Vector2(mid_point.x + 150, mid_point.y - 100)
+		cam_target += character.data.camera_position
+		cam_target += char_pos + pos
+	
+	if !lerp: Camera.position = cam_target
 
 #endregion

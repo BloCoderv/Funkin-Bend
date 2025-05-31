@@ -67,7 +67,9 @@ static func convert_to_bend_from_old(
 			
 			res.events["Funkin"].insert(count, [
 				section_ms, "FocusCamera",
-				(0 if section["mustHitSection"] else 1)
+				{
+					"char": (0 if section["mustHitSection"] else 1)
+				}
 			])
 			
 			for note in section["sectionNotes"]:
@@ -115,7 +117,9 @@ static func convert_to_bend(
 	res.scroll_speed = chart["scrollSpeed"]
 	res.stage = meta["playData"]["stage"]
 	
-	res.events["Funkin"] = chart["events"]
+	for ev in chart["events"]:
+		var values:Array = [ev["t"], ev["e"], ev["v"]]
+		res.events["Funkin"].append(values)
 	
 	for diff in chart["notes"]:
 		for note in chart["notes"][diff]:

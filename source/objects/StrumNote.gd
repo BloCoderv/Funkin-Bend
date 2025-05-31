@@ -56,6 +56,7 @@ func _input(event):
 			play_anim("press")
 	if Input.is_action_just_released("note%s" % data):
 		play_anim("static")
+		playstate.characters["player"].is_holding = false
 		if note_in_strum:
 			NoteGroup.check_sustain_hit(note_in_strum, get_tree().current_scene)
 

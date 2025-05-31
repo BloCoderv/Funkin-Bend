@@ -6,6 +6,9 @@ const HEALTH_LOSS = 4
 
 const PIXEL_PER_MS = 0.45
 
+const SING_ANIMS = ["singLEFT", "singDOWN", "singUP", "singRIGHT"]
+const SING_ANIM_ID = "sing"
+
 static func floor_decimals(val:float, decimals:int):
 	var result:float = floor(val * pow(10, decimals)) / pow(10, decimals)
 	if decimals < 1:

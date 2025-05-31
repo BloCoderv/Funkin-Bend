@@ -105,15 +105,20 @@ Misses: 0
 Accuracy: 100.0%"
 vertical_alignment = 1
 
-[node name="Player" type="AnimatedSprite2D" parent="."]
-script = ExtResource("7_4wsi4")
-metadata/_custom_type_script = "uid://kcdcy05olunk"
-
 [node name="Girlfriend" type="AnimatedSprite2D" parent="."]
+centered = false
 script = ExtResource("7_4wsi4")
 metadata/_custom_type_script = "uid://kcdcy05olunk"
 
 [node name="Opponent" type="AnimatedSprite2D" parent="."]
+position = Vector2(-200, 0)
+centered = false
+script = ExtResource("7_4wsi4")
+metadata/_custom_type_script = "uid://kcdcy05olunk"
+
+[node name="Player" type="AnimatedSprite2D" parent="."]
+position = Vector2(500, 0)
+centered = false
 script = ExtResource("7_4wsi4")
 metadata/_custom_type_script = "uid://kcdcy05olunk"
 

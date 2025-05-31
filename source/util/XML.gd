@@ -153,12 +153,15 @@ static func add_by_indices(
 		if parser.get_node_type() != XMLParser.NODE_ELEMENT or parser.get_node_name(
 		) != "SubTexture": continue
 		
-		var cur_anim_name = parser.get_named_attribute_value("name")
-		cur_anim_name = cur_anim_name.erase(cur_anim_name.length()-4,6)
+		var val_name = parser.get_named_attribute_value("name")
+		
+		var cur_anim_name = val_name.erase(val_name.length()-4,6)
 		var anim_frame = parser.get_named_attribute_value("name")
 		anim_frame = anim_frame.substr(anim_frame.length() - 4, 4).to_int()
 		
-		if prefix != cur_anim_name: continue
+		if cur_anim_name != prefix \
+		and !val_name.contains(prefix): continue
+		
 		if !anim_frame in indices: continue
 		
 		if !spr_frames.has_animation(anim_name):
@@ -186,10 +189,12 @@ static func add_by_prefix(
 		if parser.get_node_type() != XMLParser.NODE_ELEMENT or parser.get_node_name(
 		) != "SubTexture": continue
 		
-		var cur_anim_name = parser.get_named_attribute_value("name")
-		cur_anim_name = cur_anim_name.erase(cur_anim_name.length()-4,6)
+		var val_name = parser.get_named_attribute_value("name")
 		
-		if prefix != cur_anim_name: continue
+		var cur_anim_name = val_name.erase(val_name.length()-4,6)
+		
+		if cur_anim_name != prefix \
+		and !val_name.contains(prefix): continue
 		
 		if !spr_frames.has_animation(anim_name):
 			add_animation(anim_name, fps, loop, spr_frames)

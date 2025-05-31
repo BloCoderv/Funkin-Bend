@@ -4,7 +4,7 @@ extends Node
 var opponent_hit:bool = true # GLOW ON HIT
 var opponent_splashes:bool = false # SPLASH ON HIT
 
-var splashes:bool = true # SPLASH ON HIT
+var splashes:bool = false # SPLASH ON HIT
 var hit_anim:bool = true # GLOW ON HIT
 
 var downscroll:bool = false

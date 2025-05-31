@@ -5,6 +5,7 @@ class_name CharacterData
 @export var scale:Vector2 = Vector2.ONE
 @export var flip_x:bool = false
 @export var position:Vector2 = Vector2.ZERO
+@export var camera_position:Vector2 = Vector2.ZERO
 
 @export var animations:Array = []
 @export var sprites:SpriteFrames = null
@@ -32,6 +33,10 @@ static func convert_from_json(path:String, save_to:String) -> CharacterData:
 	
 	res.position = Vector2(
 		data["position"][0], data["position"][1]
+	)
+	res.camera_position = Vector2(
+		data["camera_position"][0],
+		data["camera_position"][1]
 	)
 	
 	res.health_icon = data["healthicon"]

@@ -2,9 +2,10 @@ extends Node
 
 var song:Dictionary[String, AudioStream] = {} # Inst, VoicesPlayer, VoicesOpponent
 
+var song_name:String = ""
+
 var song_id:String = "target-practice" # CAN CHANGE
 var song_mix:String = "" # CAN CHANGE
-var song_name:String = ""
 
 var stage:String = "mainStage" # CAN CHANGE
 

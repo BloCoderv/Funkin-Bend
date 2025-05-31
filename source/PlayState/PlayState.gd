@@ -41,6 +41,7 @@ var gf_speed:float = 1.0
 ## CAMERA
 var default_cam_zoom:float = 1.0
 var cam_target:Vector2 = Vector2.ZERO
+var cam_zoom:float = 1.0
 var camera_speed:float = 1.0
 
 ## PLAYER
@@ -71,7 +72,7 @@ func _process(delta):
 
 #region READY
 
-func _ready():
+func _ready() -> void:
 	strum_group.generate_strums()
 	
 	var err:String = Song.load_song()
@@ -95,6 +96,9 @@ func _ready():
 	health_icons["p1"].load_icon(characters["player"].data.health_icon)
 	health_icons["p2"].load_icon(characters["opponent"].data.health_icon)
 	
+	# CAMERA
+	setup_camera()
+	
 	# CONDUCTOR
 	Conductor.stepHit.connect(step_hit)
 	Conductor.beatHit.connect(beat_hit)
@@ -109,7 +113,7 @@ func _ready():
 	countdown.wait_time = Conductor.sec_per_beat
 	countdown.start()
 
-func start_song():
+func start_song() -> void:
 	# VOICES
 	for i in Song.song.keys():
 		if i == "Inst": continue
@@ -120,6 +124,18 @@ func start_song():
 	# START SONG
 	Conductor.play()
 	song_started = true
+
+func setup_camera() -> void:
+	Camera.zoom = Vector2(default_cam_zoom, default_cam_zoom)
+	
+	for ev in Song.chart_events["Funkin"]:
+		if ev[1] != "FocusCamera": continue
+		
+		# SET CAMERA WITHOUT LERP
+		ev[2]["ease"] = "INSTANT"
+		execute_funkin_event("FocusCamera", ev[2])
+		
+		break
 
 #endregion
 
@@ -138,7 +154,7 @@ func update_cameras_zoom(delta:float):
 	Cam_HUD.scale = Vector2(mult, mult)
 	Cam_HUD.offset.x = Global.SCREEN_SIZE.x * (1.0 - mult) / 2
 	Cam_HUD.offset.y = Global.SCREEN_SIZE.y * (1.0 - mult) / 2
-	mult = lerp(default_cam_zoom, Camera.zoom.x, exp(-delta * 3.125))
+	mult = lerp(cam_zoom, Camera.zoom.x, exp(-delta * 3.125))
 	Camera.zoom = Vector2(mult, mult)
 
 func update_camera_position(delta):
@@ -259,7 +275,8 @@ func beat_hit(beat:int) -> void:
 
 func section_hit(section:int) -> void:
 	Cam_HUD.scale += Vector2(0.03, 0.03)
-	Camera.zoom += Vector2(0.015, 0.015)
+	Camera.zoom = \
+	Vector2(cam_zoom, cam_zoom) + Vector2(0.015, 0.015)
 
 func character_bopper(beat:int) -> void:
 	for char in characters.keys():
@@ -282,19 +299,17 @@ func character_bopper(beat:int) -> void:
 func _event_process():
 	for ev in Song.chart_events["Funkin"]:
 		if ev[0] > Conductor.song_position: break
-		execute_event([ev[1], ev[2]])
+		execute_funkin_event(ev[1], ev[2])
 		Song.chart_events["Funkin"].erase(ev)
 	
 	for ev in Song.chart_events["Psych"]:
 		if ev[0] > Conductor.song_position: break
-		execute_event([ev[1], ev[2]])
+		execute_psych_event(ev[1], ev[2], ev[3])
 		Song.chart_events["Psych"].erase(ev)
 
-# event = [ name, values ]
-func execute_event(event:Array):
-	match event[0]:
+func execute_funkin_event(event:String, values):
+	match event:
 		"FocusCamera":
-			var values = event[1]
 			
 			var char = ""
 			match int(values["char"]):
@@ -312,7 +327,38 @@ func execute_event(event:Array):
 			if values.has("ease"):
 				lerp = (values["ease"] != "INSTANT")
 			
-			camera_target(char, pos, lerp)
+			set_camera_target(char, pos, lerp)
+		
+		"ZoomCamera":
+			
+			var zoom:float = 1.0
+			var duration:float = 4.0
+			var ease:String = "linear"
+			var direct:bool = false
+			
+			if !(values is Dictionary):
+				duration *= Conductor.sec_per_beat
+				tween_camera_zoom(values, duration, ease)
+				return
+			
+			if values.has("zoom"):
+				zoom = values["zoom"]
+				
+			if values.has("duration"):
+				duration = values["duration"]
+			
+			if values.has("ease"):
+				ease = values["ease"]
+			
+			if values.has("mode"):
+				direct = (values["mode"] == "direct")
+			
+			duration *= Conductor.sec_per_beat
+			
+			tween_camera_zoom(zoom, duration, ease, direct)
+
+func execute_psych_event(event:String, value1, value2):
+	pass
 
 #endregion
 
@@ -333,7 +379,7 @@ func opponent_sing(data:int, is_sustain:bool):
 
 #region CAMERAS
 
-func camera_target(char:String, pos:Vector2 = Vector2.ZERO, lerp:bool = true):
+func set_camera_target(char:String, pos:Vector2 = Vector2.ZERO, lerp:bool = true):
 	var character:Character = null
 	var mid_point:Vector2 = Vector2.ZERO
 	var char_pos:Vector2 = Vector2.ZERO
@@ -366,5 +412,21 @@ func camera_target(char:String, pos:Vector2 = Vector2.ZERO, lerp:bool = true):
 		cam_target += char_pos + pos
 	
 	if !lerp: Camera.position = cam_target
+
+func tween_camera_zoom(zoom:float, duration:float, ease:String, direct:bool = false):
+	var tw:Tween = \
+	create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS).\
+	set_ease( Util.get_ease_from_flixel_ease(ease) ).\
+	set_trans( Util.get_trans_from_flixel_ease(ease) ).\
+	set_parallel(true)
+	
+	var z:float = zoom * (1.0 if direct else default_cam_zoom)
+	
+	if duration > 0.0:
+		tw.tween_property(Camera, "zoom", Vector2(z, z), duration)
+		tw.tween_property(self, "cam_zoom", z, duration)
+	else:
+		Camera.zoom = Vector2(z, z)
+		cam_zoom = z
 
 #endregion

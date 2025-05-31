@@ -1298,6 +1298,7 @@ image_path = "res://assets/images/characters/daddyDearest"
 scale = Vector2(1, 1)
 flip_x = false
 position = Vector2(0, 0)
+camera_position = Vector2(0, 0)
 animations = [{
 "fps": 24.0,
 "indices": [],

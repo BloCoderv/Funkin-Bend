@@ -4,14 +4,14 @@ var song:Dictionary[String, AudioStream] = {} # Inst, VoicesPlayer, VoicesOppone
 
 var song_name:String = ""
 
-var song_id:String = "target-practice" # CAN CHANGE
-var song_mix:String = "" # CAN CHANGE
+var song_id:String = "roses" # CAN CHANGE
+var song_mix:String = "pico" # CAN CHANGE
 
 var stage:String = "mainStage" # CAN CHANGE
 
 var scroll_speed:float = 0.0 # 1.0
 var bpm:float = 0.0 # 100.0
-var difficulty:String = "voiid" # CAN CHANGE
+var difficulty:String = "hard" # CAN CHANGE
 
 var chart_times:Array = []
 var chart_notes:Array = []

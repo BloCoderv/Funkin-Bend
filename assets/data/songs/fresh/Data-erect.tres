@@ -306,5 +306,5 @@ characters = {
 "opponent": "dad",
 "player": "bf"
 }
-stage = "mainStageErect"
+stage = "mainStage"
 needs_voices = true

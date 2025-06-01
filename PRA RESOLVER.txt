@@ -1,1 +1,0 @@
-- bug no score quando ele ta negativo

@@ -4,33 +4,15 @@
 [ext_resource type="Script" uid="uid://cr7o3260vyosq" path="res://source/objects/Countdown.gd" id="2_rwnde"]
 [ext_resource type="Script" uid="uid://xfdqhbnnhq6p" path="res://source/PlayState/NoteGroup.gd" id="2_xq65u"]
 [ext_resource type="Script" uid="uid://pqmqd4ymy621" path="res://source/PlayState/StrumGroup.gd" id="3_l02w5"]
-[ext_resource type="Texture2D" uid="uid://udqae1fkp73e" path="res://assets/images/stages/week1/stageback.png" id="5_4wsi4"]
 [ext_resource type="PackedScene" uid="uid://b0awq63q7c2c1" path="res://scenes/objects/PopupGroup.tscn" id="5_dyej7"]
 [ext_resource type="PackedScene" uid="uid://duumxr33dyeeu" path="res://scenes/objects/Bar.tscn" id="5_paqu8"]
 [ext_resource type="Script" uid="uid://cxdv1yq7oulwc" path="res://source/objects/HealthIcon.gd" id="6_paqu8"]
 [ext_resource type="Script" uid="uid://kcdcy05olunk" path="res://source/objects/Character.gd" id="7_4wsi4"]
 [ext_resource type="FontFile" uid="uid://baf8afd0644oh" path="res://assets/fonts/vcr.ttf" id="7_o66y4"]
+[ext_resource type="PackedScene" uid="uid://c1c7gng30l76j" path="res://globals/Screen.tscn" id="10_hctgy"]
 
 [node name="PlayState" type="Node2D"]
 script = ExtResource("1_b0ega")
-
-[node name="Camera" type="Camera2D" parent="."]
-z_index = 1
-
-[node name="CountdownTimer" type="Timer" parent="."]
-process_callback = 0
-script = ExtResource("2_rwnde")
-
-[node name="VoicesOpponent" type="AudioStreamPlayer" parent="."]
-autoplay = true
-
-[node name="VoicesPlayer" type="AudioStreamPlayer" parent="."]
-autoplay = true
-
-[node name="Stageback" type="Sprite2D" parent="."]
-position = Vector2(4, 17)
-scale = Vector2(0.576563, 0.632857)
-texture = ExtResource("5_4wsi4")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -105,19 +87,32 @@ Misses: 0
 Accuracy: 100.0%"
 vertical_alignment = 1
 
+[node name="ScreenEssentials" parent="UI" instance=ExtResource("10_hctgy")]
+
+[node name="Camera" type="Camera2D" parent="."]
+z_index = 1
+
+[node name="CountdownTimer" type="Timer" parent="."]
+process_callback = 0
+script = ExtResource("2_rwnde")
+
+[node name="VoicesOpponent" type="AudioStreamPlayer" parent="."]
+autoplay = true
+
+[node name="VoicesPlayer" type="AudioStreamPlayer" parent="."]
+autoplay = true
+
 [node name="Girlfriend" type="AnimatedSprite2D" parent="."]
 centered = false
 script = ExtResource("7_4wsi4")
 metadata/_custom_type_script = "uid://kcdcy05olunk"
 
 [node name="Opponent" type="AnimatedSprite2D" parent="."]
-position = Vector2(-200, 0)
 centered = false
 script = ExtResource("7_4wsi4")
 metadata/_custom_type_script = "uid://kcdcy05olunk"
 
 [node name="Player" type="AnimatedSprite2D" parent="."]
-position = Vector2(500, 0)
 centered = false
 script = ExtResource("7_4wsi4")
 metadata/_custom_type_script = "uid://kcdcy05olunk"

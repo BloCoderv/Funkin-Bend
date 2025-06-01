@@ -2,6 +2,9 @@ extends Node2D
 class_name PlayState
 
 
+## SCREEN
+@onready var Screen = $UI/ScreenEssentials
+
 ## CAMERAS
 @onready var Cam_HUD:CanvasLayer = $UI
 @onready var Camera:Camera2D = $Camera
@@ -32,6 +35,9 @@ class_name PlayState
 ## OTHER
 @onready var countdown = $CountdownTimer
 @onready var score_txt = $UI/HUD/ScoreTxt
+
+## STAGE
+var stage:Stage = null
 
 ## GAMEPLAY
 var botplay:bool = false
@@ -96,8 +102,9 @@ func _ready() -> void:
 	health_icons["p1"].load_icon(characters["player"].data.health_icon)
 	health_icons["p2"].load_icon(characters["opponent"].data.health_icon)
 	
-	# CAMERA
+	# SETUPS
 	setup_camera()
+	setup_stage()
 	
 	# CONDUCTOR
 	Conductor.stepHit.connect(step_hit)
@@ -108,6 +115,9 @@ func _ready() -> void:
 	Conductor.stream = Song.song["Inst"]
 	Conductor.bus = "Inst"
 	Conductor.song_position = -Conductor.sec_per_beat * 1000 * 5
+	
+	# TRANSITION
+	Screen.transition_out()
 	
 	# COUNTDOWN
 	countdown.wait_time = Conductor.sec_per_beat
@@ -136,6 +146,46 @@ func setup_camera() -> void:
 		execute_funkin_event("FocusCamera", ev[2])
 		
 		break
+
+func setup_stage() -> void:
+	var stage_path = "res://assets/stages/%s.tscn" % Song.stage
+	if !FileAccess.file_exists(stage_path) \
+	or !Preferences.stages:
+		if Preferences.stages:
+			print_debug("%s not exists - Without Stage" % Song.stage)
+		stage = Stage.new()
+		add_child(stage)
+	else:
+		stage = ResourceLoader.load(
+			stage_path,
+			"PackedScene",
+			ResourceLoader.CACHE_MODE_IGNORE
+		).instantiate()
+		add_child(stage)
+	
+	stage.z_index = -1
+	default_cam_zoom = stage.camera_zoom
+	
+	for char in stage.characters.keys():
+		if !characters.has(char):
+			print_debug("%s not exists" % char)
+			continue
+		
+		for v in stage.characters[char].keys():
+			characters[char].set(v, stage.characters[char][v])
+		
+		characters[char].position.x -= characters[char].get_mid_point().x
+		characters[char].position.y -= characters[char].get_mid_point().y * 2.0
+		
+		characters[char].dance()
+	
+	for opt in stage.optimizations.keys():
+		if stage.get_child_count() <= opt:
+			print_debug("Child: %s not exists" % opt)
+			continue
+		
+		for v in stage.optimizations[opt].keys():
+			stage.get_child(opt).set(v, stage.optimizations[opt][v])
 
 #endregion
 
@@ -254,8 +304,13 @@ func miss_note(direction:int, note:Note = null, kill:bool = false):
 func update_scores():
 	calculate_rating()
 	var percent = Util.floor_decimals(rating_percent * 100, 2)
+	
+	var score = Util.format_commas(abs(song_score))
+	# NEGATIVE SCORE
+	if song_score < 0.0: score = "-" + score
+	
 	score_txt.text = "Score: {0}\nMisses: {1}\nAccuracy: {2}%".format(
-		[Util.format_commas(song_score), song_misses, percent])
+		[score, song_misses, percent])
 func calculate_rating():
 	if total_played != 0:
 		rating_percent = min(1, max(0, total_notes_hit / total_played))
@@ -349,6 +404,7 @@ func execute_funkin_event(event:String, values):
 			
 			if values.has("ease"):
 				ease = values["ease"]
+				duration = 0 if ease == "INSTANT" else duration
 			
 			if values.has("mode"):
 				direct = (values["mode"] == "direct")
@@ -397,19 +453,24 @@ func set_camera_target(char:String, pos:Vector2 = Vector2.ZERO, lerp:bool = true
 	
 	if character == null:
 		cam_target = pos
+	
 	elif character.is_player:
-		cam_target = Vector2(mid_point.x - 100, mid_point.y - 100)
+		
+		cam_target = mid_point - Vector2(100, 100)
 		cam_target.x -= character.data.camera_position.x - char_pos.x
+		cam_target.x -= character.camera_offset.x
 		cam_target.y += character.data.camera_position.y + char_pos.y
-		cam_target += pos
-	elif character.is_girlfriend:
+		cam_target.y += character.camera_offset.y
+		
+	else:
 		cam_target = mid_point
+		
+		# IF OPPONENT
+		if !character.is_girlfriend:
+			cam_target = Vector2(mid_point.x + 150, mid_point.y - 100)
+		
 		cam_target += character.data.camera_position
-		cam_target += char_pos + pos
-	else: # OPPONENT
-		cam_target = Vector2(mid_point.x + 150, mid_point.y - 100)
-		cam_target += character.data.camera_position
-		cam_target += char_pos + pos
+		cam_target += char_pos + pos + character.camera_offset
 	
 	if !lerp: Camera.position = cam_target
 

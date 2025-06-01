@@ -34,7 +34,6 @@ static func get_trans_from_flixel_ease(ease:String) -> Tween.TransitionType:
 		if ease[i].to_upper() == ease[i]:
 			ease = ease.substr(0, i)
 			break
-	print(ease)
 	
 	match ease:
 		"linear": return Tween.TRANS_LINEAR
@@ -57,10 +56,18 @@ static func get_ease_from_flixel_ease(ease:String) -> Tween.EaseType:
 	
 	if ease.begins_with("Step"): ease = ease.substr(4)
 	
-	print(ease)
-	
 	match ease:
 		"InOut": return Tween.EASE_IN_OUT
 		"In": return Tween.EASE_IN
 		"Out": return Tween.EASE_OUT
 	return Tween.EASE_IN_OUT
+
+static func scale_image(image:Image, scale:float) -> Image:
+	var img:Image = image.duplicate()
+	img.convert(Image.FORMAT_RGBA8)
+	var size = Vector2(
+		img.get_width() * scale,
+		img.get_height() * scale
+	)
+	img.resize(size.x, size.y, Image.INTERPOLATE_LANCZOS)
+	return img

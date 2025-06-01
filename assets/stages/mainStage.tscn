@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://dep5yf35ymlig"]
+
+[ext_resource type="Script" uid="uid://88gw4viq0fbd" path="res://source/classes/Stage.gd" id="1_lspn8"]
+[ext_resource type="Texture2D" uid="uid://udqae1fkp73e" path="res://assets/images/stages/week1/stageback.png" id="2_mapi6"]
+[ext_resource type="Texture2D" uid="uid://ci6a1x7xtf1uc" path="res://assets/images/stages/week1/stagefront.png" id="3_s0l6f"]
+[ext_resource type="Texture2D" uid="uid://dqootma8wn1qo" path="res://assets/images/stages/week1/stagecurtains.png" id="4_l3uje"]
+
+[node name="MainStage" type="Node2D"]
+script = ExtResource("1_lspn8")
+metadata/_custom_type_script = "uid://88gw4viq0fbd"
+
+[node name="Back" type="TextureRect" parent="."]
+offset_left = -600.0
+offset_top = -200.0
+offset_right = 1960.0
+offset_bottom = 1200.0
+texture = ExtResource("2_mapi6")
+
+[node name="Front" type="TextureRect" parent="."]
+offset_left = -650.0
+offset_top = 600.0
+offset_right = 1910.0
+offset_bottom = 1181.0
+scale = Vector2(1.1, 1.1)
+texture = ExtResource("3_s0l6f")
+
+[node name="Curtains" type="TextureRect" parent="."]
+offset_left = -500.0
+offset_top = -300.0
+offset_right = -340.0
+offset_bottom = -212.5
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("4_l3uje")

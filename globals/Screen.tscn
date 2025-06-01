@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1c7gng30l76j"]
+
+[ext_resource type="Script" uid="uid://bm5vc74xip6la" path="res://globals/Screen.gd" id="1_8ncru"]
+[ext_resource type="FontFile" uid="uid://baf8afd0644oh" path="res://assets/fonts/vcr.ttf" id="2_04weu"]
+
+[node name="ScreenEssentials" type="Control"]
+z_index = 15
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8ncru")
+
+[node name="Transition" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 720.0
+offset_bottom = 720.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="ColorRect" parent="Transition"]
+layout_mode = 0
+offset_top = 720.0
+offset_right = 1280.0
+offset_bottom = 1080.0
+color = Color(0, 0, 0, 1)
+
+[node name="Loading" type="Label" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -49.0
+offset_right = 171.0
+offset_bottom = -24.0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("2_04weu")
+theme_override_font_sizes/font_size = 28
+text = "Loading..."
+
+[node name="Info" type="Label" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 62.0
+offset_bottom = 31.0
+text = "FPS: 23"

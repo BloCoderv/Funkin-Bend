@@ -65,6 +65,7 @@ note3={
 
 [physics]
 
+2d/run_on_separate_thread=true
 jolt_physics_3d/simulation/use_enhanced_internal_edge_removal=false
 jolt_physics_3d/simulation/allow_sleep=false
 jolt_physics_3d/simulation/body_pair_contact_cache_enabled=false

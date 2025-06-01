@@ -14,6 +14,8 @@ var dance_idle:bool = false # For "danceLeft" and "danceRight"
 var hold_time:float = 0.0
 var is_holding:bool = false
 
+var camera_offset:Vector2 = Vector2(0, 0)
+
 var dance_beat_num:int = 2
 
 func _process(delta):
@@ -36,7 +38,7 @@ func load_character(char:String, player:bool):
 			path + ".tres", "Resource", 
 			ResourceLoader.CACHE_MODE_IGNORE)
 	else:
-		OS.alert("Character not exists", "Loading Placeholder")
+		print_debug("Character: %s not exists - Loading Placeholder..." % char)
 		data = ResourceLoader.load(
 			"res://assets/data/characters/placeholder.tres", "Resource", 
 			ResourceLoader.CACHE_MODE_IGNORE)
@@ -100,6 +102,12 @@ func get_mid_point() -> Vector2:
 	if sprite_frames.has_animation("idle"):
 		return sprite_frames.get_frame_texture(
 			"idle", 0).get_size() / Vector2(2.0, 2.0)
+	
+	if sprite_frames.has_animation("danceLeft"):
+		return sprite_frames.get_frame_texture(
+			"danceLeft", 0).get_size() / Vector2(2.0, 2.0
+			)
+	
 	return sprite_frames.get_frame_texture(
 		sprite_frames.get_animation_names()[0], 
 			0).get_size() / Vector2(2.0, 2.0)

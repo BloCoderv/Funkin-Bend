@@ -149,6 +149,8 @@ func _physics_process(delta):
 					playstate.characters["player"].hold_time = 0.0
 					sustain_hold_loop(note_strum, playstate.characters["player"])
 				else:
+					if Preferences.hold_splash_end:
+						note_strum.splash_hold_note()
 					remove_note(note)
 					continue
 		## OPPONENT STUFF
@@ -180,6 +182,8 @@ func _physics_process(delta):
 					playstate.characters["player"].hold_time = 0.0
 					sustain_hold_loop(note_strum, playstate.characters["player"])
 				else:
+					if Preferences.hold_splash_end:
+						note_strum.splash_hold_note()
 					note_strum.reset_time = strum_anim_time
 					remove_note(note)
 					continue

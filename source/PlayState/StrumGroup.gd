@@ -31,8 +31,8 @@ func generate_strums():
 	strum_bg.color.a = Preferences.strumline_bg
 	
 	const BG_MARGIN = 16
-	strum_bg.position.x = x - SEPARATION / 2.0
-	strum_bg.size.x = SEPARATION * (MANIA + 1)
+	strum_bg.position.x = int(x - SEPARATION / 2.0)
+	strum_bg.size.x = int(SEPARATION * (MANIA + 1))
 	strum_bg.position.x -= BG_MARGIN / 2.0
 	strum_bg.size.x += BG_MARGIN
 	

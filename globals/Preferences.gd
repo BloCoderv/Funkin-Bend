@@ -10,6 +10,8 @@ var hit_anim:bool = true # GLOW ON HIT
 var notes_behind_strum:bool = false
 var sustain_behind_strum:bool = true
 
+var hold_splash_end:bool = true
+
 var strumline_bg:float = 0.5
 
 ## SCROLL
@@ -24,6 +26,7 @@ var judge_window:Dictionary = {"sick": 45, "good": 90, "bad": 135}
 
 #region VISUALS
 
+var opponent_notes:bool = false
 var opponent_hit:bool = true # GLOW ON HIT
 var opponent_splashes:bool = false # SPLASH ON HIT
 

@@ -91,7 +91,7 @@ func popup_combo(combo:int):
 		combo_node.texture.get_size() * Vector2(0.45, 0.45)
 		
 		combo_node.position.x = \
-		(Global.SCREEN_SIZE.x * 0.507) - (36 * (l + 1)) - 65;
+		(Global.SCREEN_SIZE.x * 0.507) + (36 * (l + 1)) - 65;
 		
 		combo_node.position.y = (Global.SCREEN_SIZE.y * 0.44)
 

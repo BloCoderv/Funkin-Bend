@@ -7,7 +7,9 @@ var note_in_strum:Note = null
 var splashes:AnimatedSprite2D = null
 
 var data:int = 0
+
 var direction:String = "Left"
+var color_of_direction:String = "Purple"
 
 var opponent:bool = false
 var downscroll:bool = false
@@ -17,10 +19,19 @@ var reset_time:float = 0.0 # RETURN TO 'STATIC' ANIMATION
 func _ready():
 	# DIRECTION
 	match data:
-		# 0: "Left"
-		1: direction = "Down"
-		2: direction = "Up"
-		3: direction = "Right"
+		# 0: 
+		#	direction = "Left"
+		#	color_of_direction = "Purple"
+		1: 
+			direction = "Down"
+			color_of_direction = "Blue"
+		2: 
+			direction = "Up"
+			color_of_direction = "Green"
+		3: 
+			direction = "Right"
+			color_of_direction = "Red"
+	
 	play_anim("static")
 	
 	if !opponent or Preferences.opponent_splashes:
@@ -72,10 +83,18 @@ func play_anim(anim:String):
 func splash_note():
 	if !splashes: return
 	
+	splashes.stop()
+	splashes.sprite_frames = Global.SPLASHES_TEXTURE
+	
 	splashes.visible = true
 	var id = randi_range(1, 2)
 	splashes.play("noteImpact{0}{1}".format([ direction, id ]))
 
-
 func splash_hold_note():
-	pass
+	if !splashes: return
+	
+	splashes.stop()
+	splashes.sprite_frames = Global.HOLD_COVER_TEXTURE
+	
+	splashes.visible = true
+	splashes.play("holdCoverEnd" + color_of_direction)

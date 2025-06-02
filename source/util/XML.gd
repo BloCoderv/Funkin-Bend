@@ -9,7 +9,6 @@ extends Node
 
 @export_tool_button("Convert", "PanelContainer")
 var convert_action = xml_to_spriteframes
-#endregion
 
 func xml_to_spriteframes():
 	if !texture:
@@ -80,6 +79,7 @@ func xml_to_spriteframes():
 	texture.resource_path.length() - 3) + "tres"
 	ResourceSaver.save(spriteframes, anim_path)
 	print("Salved! in %s" % anim_path)
+#endregion
 
 static func get_xml_parser(path_xml:String) -> XMLParser:
 	if !FileAccess.file_exists(path_xml):
@@ -95,15 +95,18 @@ static func get_xml_parser(path_xml:String) -> XMLParser:
 	
 	return parser
 
-static func get_frame_from_parser(
-	parser:XMLParser, image:Texture2D
-) -> Texture2D:
+static func get_frame_from_parser(parser:XMLParser, image:Texture2D) -> Array:
 	var position = Vector2(
 	parser.get_named_attribute_value("x").to_int(),
 	parser.get_named_attribute_value("y").to_int())
 	var size = Vector2(
 	parser.get_named_attribute_value("width").to_int(),
 	parser.get_named_attribute_value("height").to_int())
+	
+	var rotated = (
+		parser.has_attribute("rotated") \
+		and parser.get_named_attribute_value("rotated") == "true"
+	)
 	
 	var atlas:Texture2D = AtlasTexture.new()
 	atlas.region = Rect2(position, size)
@@ -127,23 +130,25 @@ static func get_frame_from_parser(
 			atlas_margin.size.y = abs(atlas_margin.position.y)
 		
 		atlas.margin = atlas_margin
-	return atlas
+	
+	return [atlas, rotated]
 
 static func add_animation(
-	anim_name:String, fps:int, loop:bool, sprite_frames:SpriteFrames
-):
+anim_name:String, fps:int, loop:bool, sprite_frames:SpriteFrames):
 	sprite_frames.add_animation(anim_name)
 	sprite_frames.set_animation_speed(anim_name, fps)
 	sprite_frames.set_animation_loop(anim_name, loop)
 
-static func add_by_indices(
-	spr_frames:SpriteFrames, path:String, anim_name:String,
-	prefix:String, indices:Array, fps:int=24, loop:bool=false
-):
+## RETURN - ROTATED FRAMES
+static func add_by_indices(spr_frames:SpriteFrames, path:String, anim_name:String,
+prefix:String, indices:Array, fps:int=24, loop:bool = false) -> Array[int]:
+	
 	var parser:XMLParser = get_xml_parser(path + ".xml")
 	if !parser: OS.crash("")
 	
-	var atlas_frames:Dictionary[int, Texture2D] = {}
+	var atlas_frames:Dictionary[int, AtlasTexture] = {}
+	var rotated_frames:Array[int] = []
+	
 	var image:Texture2D = load(path + ".png")
 	
 	for i in range(indices.size()):
@@ -155,8 +160,9 @@ static func add_by_indices(
 		
 		var val_name = parser.get_named_attribute_value("name")
 		
-		var cur_anim_name = val_name.erase(val_name.length()-4,6)
-		var anim_frame = parser.get_named_attribute_value("name")
+		var cur_anim_name = val_name.erase(val_name.length() - 4, 6)
+		
+		var anim_frame = val_name
 		anim_frame = anim_frame.substr(anim_frame.length() - 4, 4).to_int()
 		
 		if cur_anim_name != prefix \
@@ -167,23 +173,30 @@ static func add_by_indices(
 		if !spr_frames.has_animation(anim_name):
 			add_animation(anim_name, fps, loop, spr_frames)
 		
-		var atlas:Texture2D = get_frame_from_parser(parser, image)
-		atlas_frames[anim_frame] = atlas
+		## [ frame_image, rotated ]
+		var frame_prop = get_frame_from_parser(parser, image)
+		
+		if frame_prop[1]: rotated_frames.append(anim_frame)
+		atlas_frames[anim_frame] = frame_prop[0]
 	
 	for i in indices:
 		if atlas_frames.has(i):
 			spr_frames.add_frame(anim_name, atlas_frames[i])
 	atlas_frames = {}
 	parser = null
+	
+	return rotated_frames
 
-static func add_by_prefix(
-	spr_frames:SpriteFrames, path:String,
-	anim_name:String, prefix:String, fps:int=24, loop:bool=false
-):
+## RETURN - ROTATED FRAMES
+static func add_by_prefix(spr_frames:SpriteFrames, path:String,
+anim_name:String, prefix:String, fps:int=24, loop:bool=false) -> Array[int]:
+	
 	var parser:XMLParser = get_xml_parser(path + ".xml")
 	if !parser: OS.crash("")
 	
 	var image:Texture2D = load(path + ".png")
+	
+	var rotated_frames:Array[int] = []
 	
 	while parser.read() != ERR_FILE_EOF:
 		if parser.get_node_type() != XMLParser.NODE_ELEMENT or parser.get_node_name(
@@ -191,7 +204,10 @@ static func add_by_prefix(
 		
 		var val_name = parser.get_named_attribute_value("name")
 		
-		var cur_anim_name = val_name.erase(val_name.length()-4,6)
+		var cur_anim_name = val_name.erase(val_name.length() - 4, 6)
+		
+		var anim_frame = val_name
+		anim_frame = anim_frame.substr(anim_frame.length() - 4, 4).to_int()
 		
 		if cur_anim_name != prefix \
 		and !val_name.contains(prefix): continue
@@ -199,6 +215,11 @@ static func add_by_prefix(
 		if !spr_frames.has_animation(anim_name):
 			add_animation(anim_name, fps, loop, spr_frames)
 		
-		var atlas:Texture2D = get_frame_from_parser(parser, image)
-		spr_frames.add_frame(anim_name, atlas)
+		## [ frame_image, rotated ]
+		var frame_prop = get_frame_from_parser(parser, image)
+		
+		if frame_prop[1]: rotated_frames.append(anim_frame)
+		spr_frames.add_frame(anim_name, frame_prop[0])
 	parser = null
+	
+	return rotated_frames

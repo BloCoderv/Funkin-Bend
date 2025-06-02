@@ -50,7 +50,7 @@ func popup_rating(rat:String):
 	
 	rating.texture = rat_image
 	rating.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	rating.size = rating.texture.get_size() * Vector2(0.7, 0.7)
+	rating.size = rating.texture.get_size() * Vector2(0.65, 0.65)
 	
 	rating.position.x = (Global.SCREEN_SIZE.x * 0.474) - rating.size.x / 2
 	rating.position.y = (Global.SCREEN_SIZE.y * 0.45 - 60) - rating.size.y / 2
@@ -86,9 +86,13 @@ func popup_combo(combo:int):
 		
 		combo_node.texture = get_combo_number(temp_combo[l])
 		combo_node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		combo_node.size = combo_node.texture.get_size() * Vector2(0.6, 0.6)
 		
-		combo_node.position.x = (Global.SCREEN_SIZE.x * 0.507) + (50 * (l + 1)) - 90
+		combo_node.size = \
+		combo_node.texture.get_size() * Vector2(0.45, 0.45)
+		
+		combo_node.position.x = \
+		(Global.SCREEN_SIZE.x * 0.507) - (36 * (l + 1)) - 65;
+		
 		combo_node.position.y = (Global.SCREEN_SIZE.y * 0.44)
 
 		combo_node.position += Preferences.combo_offset

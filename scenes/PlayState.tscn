@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://ddrywk1jny7yg"]
 
 [ext_resource type="Script" uid="uid://bq2vjtoycd6k2" path="res://source/PlayState/PlayState.gd" id="1_b0ega"]
-[ext_resource type="Script" uid="uid://cr7o3260vyosq" path="res://source/objects/Countdown.gd" id="2_rwnde"]
+[ext_resource type="Script" uid="uid://cr7o3260vyosq" path="res://source/PlayState/Countdown.gd" id="2_rwnde"]
 [ext_resource type="Script" uid="uid://xfdqhbnnhq6p" path="res://source/PlayState/NoteGroup.gd" id="2_xq65u"]
 [ext_resource type="Script" uid="uid://pqmqd4ymy621" path="res://source/PlayState/StrumGroup.gd" id="3_l02w5"]
 [ext_resource type="PackedScene" uid="uid://b0awq63q7c2c1" path="res://scenes/objects/PopupGroup.tscn" id="5_dyej7"]

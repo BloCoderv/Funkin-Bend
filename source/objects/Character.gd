@@ -18,6 +18,23 @@ var camera_offset:Vector2 = Vector2(0, 0)
 
 var dance_beat_num:int = 2
 
+func _ready():
+	connect("frame_changed", check_frame_rotation)
+	connect("animation_changed", check_frame_rotation)
+
+func check_frame_rotation():
+	if !data: return
+	
+	if data.rotated_frames.has(animation) \
+	and frame + 1 in data.rotated_frames[animation]:
+		rotation = deg_to_rad(-90.0)
+		scale.x = -data.scale.x
+		flip_h = true
+	else:
+		rotation = deg_to_rad(0.0)
+		scale.x = data.scale.x
+		flip_h = false
+
 func _process(delta):
 	if !data: return
 	
@@ -30,12 +47,14 @@ func _process(delta):
 		hold_time = 0.0
 
 func load_character(char:String, player:bool):
-	var path:String = "res://assets/data/characters/" + char
-	if FileAccess.file_exists(path + ".json"):
-		data = CharacterData.convert_from_json(path + ".json", path)
-	elif FileAccess.file_exists(path + ".tres"):
+	var char_path:String = "res://assets/data/characters/%s.json" % char
+	var res_path:String = "res://assets/data/characters/%s.tres" % char
+	
+	if FileAccess.file_exists(char_path):
+		data = CharacterData.convert_to_bend_from_psych(char_path)
+	elif FileAccess.file_exists(res_path):
 		data = ResourceLoader.load(
-			path + ".tres", "Resource", 
+			res_path, "Resource",
 			ResourceLoader.CACHE_MODE_IGNORE)
 	else:
 		print_debug("Character: %s not exists - Loading Placeholder..." % char)
@@ -83,8 +102,11 @@ func play_anim(anim:String):
 	if !sprite_frames: return
 	
 	if sprite_frames.has_animation(anim):
+		stop()
 		play(anim)
+		
 		offset = -data.offsets[anim]
+		
 		if !is_player:
 			offset.x *= -1
 		

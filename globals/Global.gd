@@ -1,17 +1,22 @@
 extends Node
 
-# PRELOAD
+
+## NOTES PRELOAD
 const NOTES = preload("res://assets/images/ui/notes.tres")
 const NOTE_HOLD = preload("res://assets/images/ui/NOTE_hold_assets.png")
 const SPLASHES_TEXTURE = preload("res://assets/images/ui/noteSplashes.tres")
+const HOLD_COVER_TEXTURE = preload("res://assets/images/ui/holdCover.tres")
 
+## GAME PRELOAD
 const ICON_NONE = preload("res://assets/images/icons/icon-face.png")
 
-# SCREEN STUFF
+## OTHER
 const SCREEN_SIZE = Vector2(1280, 720)
 
+
 func _ready():
-	RenderingServer.set_default_clear_color(Color.BLACK)
+	## SETS CLEAR COLOR BLACK
+	RenderingServer.set_default_clear_color(Color.WHITE)
 	
 	if Preferences.auto_pause:
 		setup_auto_pause()
@@ -31,8 +36,12 @@ func change_scene(path:String, with_transition:bool=false):
 	assert(get_tree().change_scene_to_file(path) == OK)
 	get_tree().paused = false # PAUSE MENU
 
+#region SUSTAIN HOLD
+
 var hold_textures:Dictionary[int, Array] = {}
-func get_hold_textures(data:int):
+
+## RETURNS [ HOLD TEXTURE, HOLD TEXTURE END ]
+func get_hold_textures(data:int) -> Array:
 	if hold_textures.has(data):
 		return hold_textures[data]
 	
@@ -57,3 +66,5 @@ func get_hold_textures(data:int):
 	
 	hold_textures[data] = [hold, end]
 	return [hold, end]
+
+#endregion

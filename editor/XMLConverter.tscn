@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://bq105lpbm18fu"]
+
+[ext_resource type="Script" uid="uid://bkubi7qvpobwe" path="res://source/util/XML.gd" id="1_fewxg"]
+[ext_resource type="Texture2D" uid="uid://cdf3k2pijdwk" path="res://assets/images/ui/holdCover.png" id="2_fewxg"]
+
+[node name="XML Converter" type="Node"]
+script = ExtResource("1_fewxg")
+texture = ExtResource("2_fewxg")

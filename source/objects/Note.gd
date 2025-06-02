@@ -40,6 +40,12 @@ func _ready():
 	
 	var textures:Array = Global.get_hold_textures(strum_data)
 	
+	if Preferences.sustain_behind_strum:
+		sustain.z_index = -2
+		sustain.show_behind_parent = true
+		sustain_end.z_index = -2
+		sustain_end.show_behind_parent = true
+	
 	sustain.texture = textures[0]
 	sustain.size.x = sustain.texture.get_size().x
 	

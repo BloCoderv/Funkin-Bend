@@ -10,14 +10,16 @@ class_name CharacterData
 @export var animations:Array = []
 @export var sprites:SpriteFrames = null
 @export var offsets:Dictionary[String, Vector2] = {}
+@export var rotated_frames:Dictionary[String, Array] = {}
 
 @export var sing_duration:int = 4
 
 @export var health_icon:String = "face"
 @export var health_color:Color = Color(1, 0, 0)
 
-static func convert_from_json(path:String, save_to:String) -> CharacterData:
-	# CONVERT FROM PSYCH ENGINE 0.7.3
+static func convert_to_bend_from_psych(path:String) -> CharacterData:
+	## PSYCH ENGINE 0.7.3
+	
 	var json = FileAccess.open(path, FileAccess.READ)
 	var data = JSON.parse_string(json.get_as_text()) as Dictionary
 	json.close()
@@ -50,16 +52,21 @@ static func convert_from_json(path:String, save_to:String) -> CharacterData:
 	
 	# ANIMATIONS
 	res.sprites = SpriteFrames.new()
+	
 	for anim in data["animations"]:
 		# LOADING
-		if anim["indices"]: XML.add_by_indices(
-			res.sprites, anim_path, anim["anim"],
-			anim["name"], anim["indices"], anim["fps"], anim["loop"]
-		)
-		else: XML.add_by_prefix(
-			res.sprites, anim_path, anim["anim"],
-			anim["name"], anim["fps"], anim["loop"]
-		)
+		if anim["indices"]:
+			res.rotated_frames[anim["anim"]] = XML.add_by_indices(
+				res.sprites, anim_path, anim["anim"],
+				anim["name"], anim["indices"], anim["fps"], anim["loop"]
+			)
+		else:
+			res.rotated_frames[anim["anim"]] = XML.add_by_prefix(
+				res.sprites, anim_path, anim["anim"],
+				anim["name"], anim["fps"], anim["loop"]
+			)
+		
+		
 		
 		# OFFSETS
 		res.offsets[ anim["anim"] ] = Vector2(
@@ -75,27 +82,11 @@ static func convert_from_json(path:String, save_to:String) -> CharacterData:
 			"indices": anim["indices"]
 		})
 	
-	ResourceSaver.save(res, save_to + ".tres")
+	ResourceSaver.save(res, path.get_basename() + ".tres")
 	data = null
-	var err = DirAccess.remove_absolute(save_to + ".json")
+	var err = DirAccess.remove_absolute(path)
 	if err:
-		OS.alert("CharacterData - convert json - remove error: " + err)
+		printerr("CharacterData - convert json - remove error: " + err)
 		return
 	
 	return res
-
-static func load_sprites(image_path:String, anims:Dictionary) -> SpriteFrames:
-	var sprites:SpriteFrames = SpriteFrames.new()
-	
-	for anim in anims:
-		# LOADING
-		if anim["indices"]: XML.add_by_indices(
-			sprites, image_path, anim["name"], anim["prefix"], 
-			anim["indices"], anim["fps"], anim["loop"]
-		)
-		else: XML.add_by_prefix(
-			sprites, image_path, anim["name"],
-			anim["prefix"], anim["fps"], anim["loop"]
-		)
-	
-	return sprites

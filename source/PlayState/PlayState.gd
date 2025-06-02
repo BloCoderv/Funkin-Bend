@@ -181,7 +181,8 @@ func setup_stage() -> void:
 	
 	for opt in stage.optimizations.keys():
 		if stage.get_child_count() <= opt:
-			print_debug("Child: %s not exists" % opt)
+			if Preferences.stages:
+				print_debug("Child: %s not exists" % opt)
 			continue
 		
 		for v in stage.optimizations[opt].keys():
@@ -234,7 +235,7 @@ func judge_note(diff) -> Dictionary:
 	return {"name": "shit", "percent": 0.0, "score": 50}
 
 func player_hit(note:Note):
-	var strum:StrumNote = StrumGroup.player_strums[note.data]
+	var strum:StrumNote = StrumGroup.player_strums[note.strum_data]
 	strum.play_anim("confirm")
 	
 	note.was_hit = true
@@ -262,12 +263,13 @@ func player_hit(note:Note):
 	
 	popup_group.popup_combo(combo)
 	
+	characters["player"].is_holding = true
 	player_sing(note.strum_data, note.is_sustain)
 	
 	update_scores()
 
 func opponent_hit(note:Note):
-	var strum:StrumNote = StrumGroup.player_strums[note.data]
+	var strum:StrumNote = StrumGroup.opponent_strums[note.strum_data]
 	if Preferences.opponent_hit:
 		strum.play_anim("confirm")
 	note.was_hit = true
@@ -423,7 +425,6 @@ func execute_psych_event(event:String, value1, value2):
 func player_sing(data:int, is_sustain:bool):
 	var anim:String = Util.SING_ANIMS[data]
 	characters["player"].hold_time = 0.0
-	characters["player"].is_holding = true
 	characters["player"].play_anim(anim)
 
 func opponent_sing(data:int, is_sustain:bool):

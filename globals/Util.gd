@@ -1,6 +1,11 @@
 extends Node
 class_name Util
 
+## >  -------  UTILITIES  -------  < ##
+
+
+#region CONSTANTS
+
 const HEALTH_GAIN = 2
 const HEALTH_LOSS = 4
 
@@ -8,6 +13,8 @@ const PIXEL_PER_MS = 0.45
 
 const SING_ANIMS = ["singLEFT", "singDOWN", "singUP", "singRIGHT"]
 const SING_ANIM_ID = "sing"
+
+#endregion
 
 static func floor_decimals(val:float, decimals:int):
 	var result:float = floor(val * pow(10, decimals)) / pow(10, decimals)
@@ -29,7 +36,6 @@ static func format_commas(num:int) -> String:
 	return result
 
 static func get_trans_from_flixel_ease(ease:String) -> Tween.TransitionType:
-	
 	for i in ease.length():
 		if ease[i].to_upper() == ease[i]:
 			ease = ease.substr(0, i)
@@ -48,7 +54,6 @@ static func get_trans_from_flixel_ease(ease:String) -> Tween.TransitionType:
 	return Tween.TRANS_LINEAR
 
 static func get_ease_from_flixel_ease(ease:String) -> Tween.EaseType:
-	
 	for i in ease.length():
 		if ease[i].to_upper() == ease[i]:
 			ease = ease.substr(i)

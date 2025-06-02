@@ -46,6 +46,7 @@ theme_override_font_sizes/font_size = 28
 text = "Loading..."
 
 [node name="Info" type="Label" parent="."]
+layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 62.0

@@ -56,7 +56,11 @@ func _input(event):
 			play_anim("press")
 	if Input.is_action_just_released("note%s" % data):
 		play_anim("static")
+		
+		# CHARACTER PLAYER
+		playstate.characters["player"].hold_time = 0.0
 		playstate.characters["player"].is_holding = false
+		
 		if note_in_strum:
 			NoteGroup.check_sustain_hit(note_in_strum, get_tree().current_scene)
 
@@ -71,6 +75,7 @@ func splash_note():
 	splashes.visible = true
 	var id = randi_range(1, 2)
 	splashes.play("noteImpact{0}{1}".format([ direction, id ]))
+
 
 func splash_hold_note():
 	pass

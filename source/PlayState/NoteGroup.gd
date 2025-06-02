@@ -2,18 +2,19 @@ extends Node
 class_name NoteGroup
 
 
-const SPAWN_TIME_OFFSET = 2000
-
 const NOTE_SCENE = preload("res://scenes/objects/Note.tscn")
 
 @onready var playstate:PlayState = get_tree().current_scene
 
+const SPAWN_TIME_OFFSET = 2000
+
 static var notes:Array[Note] = [] # NOTES IN SCREEN
-static var unspawn_notes:Array[Note] = [] # NOTE DATA
+static var unspawn_notes:Array[Note] = []
 
 static var invalid_offset:float = 0.0
 static var note_song_offset:float = 0.0
 static var safe_offset:float = 0.0
+
 static var strum_anim_time:float = 0.0
 
 static func load_notes():
@@ -27,8 +28,9 @@ static func load_notes():
 		
 		new.strum_data = int(note[1]) % 4
 		
-		# ORDER
+		# SETUP
 		new.z_index = 4 if Preferences.notes_behind_strum else 5
+		new.modulate.a = Preferences.notes_opacity
 		
 		if new.length > 0.0:
 			new.is_sustain = true
@@ -36,6 +38,8 @@ static func load_notes():
 		if new.data > 3: new.must_press = false
 		
 		unspawn_notes.append(new)
+
+#region Notes Functions
 
 static func remove_note(note:Note):
 	notes.erase(note)
@@ -46,7 +50,10 @@ static func invalidate_note(note:Note):
 	note.can_hit = false
 	note.self_modulate.a = 0.5
 
+#endregion
+
 #region Sustain Functions
+
 static func check_sustain_hit(note:Note, playstate:PlayState):
 	if note and note.is_sustain and note.was_hit and note.length > 10: 
 		playstate.miss_note(note.strum_data, note, true)
@@ -58,25 +65,8 @@ static func sustain_hold_loop(strum:StrumNote, char:Character):
 	if strum.animation != "confirm" + strum.direction:
 		strum.animation = "confirm" + strum.direction
 	strum.frame = 0 if strum.frame else 1
-#endregion
 
-func spawn_notes_of(timeMS:float):
-	for note in unspawn_notes:
-		var n_time = SPAWN_TIME_OFFSET
-		
-		if(Song.scroll_speed < 1): n_time /= Song.song_speed
-		if !(note.time - Conductor.song_position < n_time): break
-		
-		# INSTANTIATE
-		
-		if StrumGroup.strum_notes[note.data].downscroll:
-			note.position.y = -note.texture.get_size().y * 0.7
-		else:
-			note.position.y = Global.SCREEN_SIZE.y
-		
-		add_child(note)
-		notes.append(note)
-		unspawn_notes.erase(note)
+#endregion
 
 func _physics_process(delta):
 	# SPAWN
@@ -199,3 +189,21 @@ func _physics_process(delta):
 			note.change_sustain_height(
 				get_sustain_height(note.length)
 			)
+
+func spawn_notes_of(timeMS:float) -> void:
+	for note in unspawn_notes:
+		var n_time = SPAWN_TIME_OFFSET
+		
+		if(Song.scroll_speed < 1): n_time /= Song.song_speed
+		if !(note.time - Conductor.song_position < n_time): break
+		
+		# INSTANTIATE
+		
+		if StrumGroup.strum_notes[note.data].downscroll:
+			note.position.y = -note.texture.get_size().y * 0.7
+		else:
+			note.position.y = Global.SCREEN_SIZE.y
+		
+		add_child(note)
+		notes.append(note)
+		unspawn_notes.erase(note)

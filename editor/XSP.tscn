@@ -1,8 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://bq105lpbm18fu"]
-
-[ext_resource type="Script" uid="uid://bkubi7qvpobwe" path="res://source/util/XML.gd" id="1_r68do"]
-[ext_resource type="Texture2D" uid="uid://bts86xlkdyn0l" path="res://assets/images/ui/popup/popups.png" id="2_d1p4n"]
-
-[node name="XML to SPRITEFRAMES" type="Node"]
-script = ExtResource("1_r68do")
-texture = ExtResource("2_d1p4n")

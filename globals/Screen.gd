@@ -8,6 +8,13 @@ const TRANSITION_TEXTURE = preload("res://assets/images/ui/transitionGradient.pn
 var prev_screen_size:Vector2 = Vector2.ZERO
 
 
+func _input(event):
+	if Input.is_action_just_pressed("fullscreen"):
+		if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+
 func _process(delta):
 	info.text = "FPS: " + str(Engine.get_frames_per_second())
 	

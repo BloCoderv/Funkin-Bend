@@ -79,7 +79,7 @@ static func convert_to_bend_from_old(
 				res.charts[diff].append(n)
 			count += 1
 		
-	if !data["song"].has("events"): return
+	if !data["song"].has("events"): return res
 	
 	## EVENTS
 	

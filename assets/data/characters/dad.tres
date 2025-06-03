@@ -885,7 +885,7 @@ offsets = Dictionary[String, Vector2]({
 "idle": Vector2(0, 0),
 "idle-loop": Vector2(0, 0),
 "singDOWN": Vector2(0, -30),
-"singLEFT": Vector2(-9, 10),
+"singLEFT": Vector2(-10, 10),
 "singLEFT-loop": Vector2(-9, 10),
 "singRIGHT": Vector2(0, 27),
 "singRIGHT-loop": Vector2(0, 27),

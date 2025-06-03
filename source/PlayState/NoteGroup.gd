@@ -62,6 +62,8 @@ static func get_sustain_height(length:float) -> float:
 	return length * Util.PIXEL_PER_MS * Song.scroll_speed
 
 static func sustain_hold_loop(strum:StrumNote, char:Character):
+	if !strum.sprite_frames: return
+	
 	if strum.animation != "confirm" + strum.direction:
 		strum.animation = "confirm" + strum.direction
 	strum.frame = 0 if strum.frame else 1
@@ -79,8 +81,12 @@ func _physics_process(delta):
 	else: strum_anim_time = 0.001
 	
 	for note in notes:
+		
 		var note_strum:StrumNote = StrumGroup.strum_notes[note.data]
-		var note_length:float = (note.time + note.full_length) - Conductor.song_position
+		
+		# SUSTAIN LENGTH
+		var note_length:float = \
+		(note.time + note.full_length) - Conductor.song_position
 		
 		# VELOCITY
 		if !note.is_sustain or (note.is_sustain and !note.is_holding):
@@ -120,7 +126,9 @@ func _physics_process(delta):
 					note_strum.note_in_strum = null
 				invalidate_note(note)
 		
-		## PLAYER STUFF
+		
+#region PLAYER NOTES
+
 		if note.must_press and !playstate.botplay:
 			if (
 				!note.was_hit
@@ -153,25 +161,7 @@ func _physics_process(delta):
 						note_strum.splash_hold_note()
 					remove_note(note)
 					continue
-		## OPPONENT STUFF
-		elif !playstate.botplay:
-			if Conductor.song_position >= note.time and !note.was_hit:
-				note.length = note_length
-				playstate.opponent_hit(note)
-				# OPPONENT HIT ANIMATION TIME
-				if !note.is_sustain: note_strum.reset_time = strum_anim_time
-			if note.was_hit and note.is_sustain:
-				if note.length > 10:
-					note.length = note_length
-					playstate.characters["opponent"].hold_time = 0.0
-					if Preferences.opponent_hit:
-						sustain_hold_loop(note_strum, playstate.characters["opponent"])
-				else:
-					note_strum.reset_time = strum_anim_time
-					remove_note(note)
-					continue
-		## BOTPLAY STUFF
-		else:
+		elif playstate.botplay:
 			if Conductor.song_position >= note.time:
 				note.length = note_length
 				playstate.player_hit(note)
@@ -187,27 +177,170 @@ func _physics_process(delta):
 					note_strum.reset_time = strum_anim_time
 					remove_note(note)
 					continue
+
+#endregion
+
+#region OPPONENT NOTES
+
+		else:
+			if Conductor.song_position >= note.time and !note.was_hit:
+				note.length = note_length
+				playstate.opponent_hit(note)
+				# OPPONENT HIT ANIMATION TIME
+				if !note.is_sustain: note_strum.reset_time = strum_anim_time
+			if note.was_hit and note.is_sustain:
+				if note.length > 10:
+					note.length = note_length
+					playstate.characters["opponent"].hold_time = 0.0
+					if Preferences.opponent_hit:
+						sustain_hold_loop(note_strum, playstate.characters["opponent"])
+				else:
+					note_strum.reset_time = strum_anim_time
+					remove_note(note)
+					continue
+
+#endregion
 		
-		# SUSTAIN LENGTH
 		if note.is_sustain:
 			note.change_sustain_height(
 				get_sustain_height(note.length)
 			)
 
+func _note_process(delta:float, note:Note):
+	var note_strum:StrumNote = StrumGroup.strum_notes[note.data]
+	
+	# SUSTAIN LENGTH
+	var note_length:float = \
+	(note.time + note.full_length) - Conductor.song_position
+	
+	if note.is_sustain:
+		note.change_sustain_height(
+			get_sustain_height(note.length)
+		)
+	
+	# VELOCITY
+	if !note.is_sustain or (note.is_sustain and !note.is_holding):
+		var note_song_pos = Util.PIXEL_PER_MS * (
+			Conductor.song_position - note.time)
+		note_song_pos *= Song.scroll_speed
+		if !note_strum.downscroll: note_song_pos *= -1
+		note.position.y = note_strum.position.y + note_song_pos + note.pivot.y
+	else:
+		note.position.y = note_strum.position.y + note.pivot.y
+	
+	note.position.x = note_strum.position.x + note.pivot.x
+	note.rotation = note_strum.rotation
+	note.modulate.a = note_strum.modulate.a
+	
+	var sus_k_offset = 0 if !note.sustain else note.sustain.size.y
+	var kill_note:bool = false
+	
+	if note_strum.downscroll:
+		kill_note = note.position.y - sus_k_offset >= 720
+	else:
+		kill_note = note.position.y - (note.pivot.y * 2) + sus_k_offset <= 0
+	
+	# KILL
+	if kill_note and note.must_press and !note.too_late:
+		playstate.miss_note(note.strum_data, note, true)
+		return
+	elif kill_note:
+		remove_note(note)
+		return
+	
+	# TOO LATE
+	if note.too_late: return
+	if Conductor.song_position - note.time > invalid_offset:
+		if note.must_press and !playstate.botplay and (
+		!note.is_sustain or !note.was_hit):
+			playstate.miss_note(note.strum_data, note)
+			note.too_late = true
+			if note_strum.note_in_strum == note:
+				note_strum.note_in_strum = null
+			invalidate_note(note)
+	
+	## PLAYER
+	if note.must_press:
+		
+		note.can_hit = (
+			!note.was_hit
+			and note.time > Conductor.song_position - safe_offset 
+			and note.time < Conductor.song_position + safe_offset
+		)
+		
+		if (!note_strum.note_in_strum
+			or note_strum.note_in_strum.time > note.time
+			or note_strum.note_in_strum.was_hit
+		): note_strum.note_in_strum = note
+		
+		if (note.is_sustain
+			and Conductor.song_position >= note.time
+			and !note.is_holding 
+			and !note.too_late
+		): note.length = note_length
+		
+		var can_hold_sustain:bool = (
+			note.was_hit and note.is_sustain
+			and (
+				playstate.botplay or
+				note.is_holding and !note.too_late
+			)
+		)
+		
+		if playstate.botplay and \
+		!note.was_hit and Conductor.song_position >= note.time:
+			note.length = note_length
+			playstate.player_hit(note)
+			# HIT ANIMATION RESET TIME
+			if !note.is_sustain: note_strum.reset_time = strum_anim_time
+		
+		if note.length > 10 and can_hold_sustain:
+			note.length = note_length
+			playstate.characters["player"].hold_time = 0.0
+			if Preferences.hit_anim:
+				sustain_hold_loop( note_strum,
+				playstate.characters["player"] )
+		elif can_hold_sustain:
+			if Preferences.hold_splash_end: note_strum.splash_hold_note()
+			if playstate.botplay: note_strum.reset_time = strum_anim_time
+			remove_note(note)
+	## OPPONENT
+	else:
+		
+		if Conductor.song_position >= note.time and !note.was_hit:
+			note.length = note_length
+			playstate.opponent_hit(note)
+			# HIT ANIMATION RESET TIME
+			if !note.is_sustain: note_strum.reset_time = strum_anim_time
+		
+		if note.was_hit and note.is_sustain:
+			if note.length > 10:
+				
+				note.length = note_length
+				playstate.characters["opponent"].hold_time = 0.0
+				
+				if Preferences.opponent_hit:
+					sustain_hold_loop( note_strum, 
+					playstate.characters["opponent"] )
+			else:
+				note_strum.reset_time = strum_anim_time
+				remove_note(note)
+
 func spawn_notes_of(timeMS:float) -> void:
 	for note in unspawn_notes:
+		if StrumGroup.strum_notes.size() <= note.data: break
+		
 		var n_time = SPAWN_TIME_OFFSET
 		
 		if(Song.scroll_speed < 1): n_time /= Song.song_speed
 		if !(note.time - Conductor.song_position < n_time): break
-		
-		# INSTANTIATE
 		
 		if StrumGroup.strum_notes[note.data].downscroll:
 			note.position.y = -note.texture.get_size().y * 0.7
 		else:
 			note.position.y = Global.SCREEN_SIZE.y
 		
+		# INSTANTIATE
 		add_child(note)
 		notes.append(note)
 		unspawn_notes.erase(note)

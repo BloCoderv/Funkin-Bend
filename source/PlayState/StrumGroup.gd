@@ -3,9 +3,9 @@ class_name StrumGroup
 
 const STRUM_NOTE_SCENE = preload("res://scenes/objects/StrumNote.tscn")
 
-static var strum_notes:Array = []
-static var opponent_strums:Array = []
-static var player_strums:Array = []
+static var strum_notes:Array[StrumNote] = []
+static var opponent_strums:Array[StrumNote] = []
+static var player_strums:Array[StrumNote] = []
 
 const SCALE = 0.7
 const SEPARATION = 160 * SCALE
@@ -54,6 +54,11 @@ offset:Vector2, opponent:bool, mania:int = 3) -> void:
 		new.opponent = opponent
 		new.z_index = 4 if !Preferences.notes_behind_strum else 5
 		new.self_modulate.a = Preferences.strums_opacity
+		
+		# WITHOUT OPPONENT NOTES
+		if new.opponent and !Preferences.opponent_notes:
+			new.visible = false
+			new.sprite_frames = null
 		
 		# INSTANTIATE
 		add_child(new)

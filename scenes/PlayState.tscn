@@ -109,6 +109,7 @@ metadata/_custom_type_script = "uid://kcdcy05olunk"
 
 [node name="Opponent" type="AnimatedSprite2D" parent="."]
 centered = false
+flip_h = true
 script = ExtResource("7_4wsi4")
 metadata/_custom_type_script = "uid://kcdcy05olunk"
 

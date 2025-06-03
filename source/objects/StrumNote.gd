@@ -34,8 +34,8 @@ func _ready():
 	
 	play_anim("static")
 	
-	if !opponent or Preferences.opponent_splashes:
-		splashes_setup()
+	if !opponent or (Preferences.opponent_splashes
+	and Preferences.opponent_notes): splashes_setup()
 
 func splashes_setup():
 	splashes = AnimatedSprite2D.new()
@@ -76,6 +76,8 @@ func _input(event):
 			NoteGroup.check_sustain_hit(note_in_strum, get_tree().current_scene)
 
 func play_anim(anim:String):
+	if !sprite_frames: return
+	
 	var anim_to_play:String = anim + direction
 	if sprite_frames.has_animation(anim_to_play):
 		play(anim_to_play)

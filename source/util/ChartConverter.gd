@@ -45,6 +45,8 @@ func convert_data():
 			DirAccess.remove_absolute(meta_path)
 			DirAccess.remove_absolute(chart_path)
 		
+		mix.text = mix.text.substr(1)
+		
 		success_msg()
 	
 	elif type == "PSYCH" or type == "OLD":

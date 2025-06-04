@@ -273,12 +273,6 @@ func _note_process(delta:float, note:Note):
 			or note_strum.note_in_strum.was_hit
 		): note_strum.note_in_strum = note
 		
-		if (note.is_sustain
-			and Conductor.song_position >= note.time
-			and !note.is_holding 
-			and !note.too_late
-		): note.length = note_length
-		
 		var can_hold_sustain:bool = (
 			note.was_hit and note.is_sustain
 			and (

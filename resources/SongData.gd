@@ -58,15 +58,22 @@ static func convert_to_bend_from_old(
 		res.charts[diff] = []
 		
 		var count:int = 0
+		var cur_bpm:float = res.bpm
+		var total_pos:float = 0.0
+		var total_steps:int = 0
+		
 		for section in data["song"]["notes"]:
-			var section_ms:float = (60.0 / res.bpm) * 4 * count * 1000
 			
 			if section.has("bpm") and section.has("changeBPM") \
 			and section["changeBPM"]:
-				res.times.append([section_ms, section["bpm"]])
+				cur_bpm = section["bpm"]
+				# BPM TIME CHANGE
+				res.times.append(
+					[total_pos, total_steps, cur_bpm]
+				)
 			
 			res.events["Funkin"].insert(count, [
-				section_ms, "FocusCamera",
+				total_pos, "FocusCamera",
 				{
 					"char": (0 if section["mustHitSection"] else 1)
 				}
@@ -75,8 +82,17 @@ static func convert_to_bend_from_old(
 			for note in section["sectionNotes"]:
 				var n:Array = note
 				if !section["mustHitSection"]:
-					n[1] += 4 if n[1] < 4 else -4
+					n[1] += 4 if ( n[1] < 4 ) else -4
 				res.charts[diff].append(n)
+			
+			var section_beats:float = 4.0
+			if section.has("sectionBeats"):
+				section_beats = section["sectionBeats"]
+			
+			var delta_steps:int = round(section_beats * 4)
+			total_steps += delta_steps
+			total_pos += ((cur_bpm / 60.0) * 1000 / 4) * delta_steps
+			
 			count += 1
 		
 	if !data["song"].has("events"): return res
@@ -131,7 +147,11 @@ static func convert_to_bend(
 			res.charts[diff].append(values)
 	
 	for change in meta["timeChanges"]:
-		# TO ARRAY
-		res.times.append([change["t"], change["bpm"]])
+		var beats:float = 4.0
+		if change.has("b"):
+			beats = change["b"]
+		
+		var delta_steps:int = round(beats * 4)
+		res.times.append([change["t"], delta_steps, change["bpm"]])
 	
 	return res

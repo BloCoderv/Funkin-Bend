@@ -622,7 +622,7 @@ events = Dictionary[String, Array]({
 }]],
 "Psych": []
 })
-times = [[0.0, 176.0]]
+times = [[0.0, 0, 176.0]]
 characters = {
 "altInstrumentals": [],
 "girlfriend": "gf",

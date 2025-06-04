@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="SongData" load_steps=2 format=3 uid="uid://d2m2t6166132r"]
+[gd_resource type="Resource" script_class="SongData" load_steps=2 format=3]
 
-[ext_resource type="Script" uid="uid://din72symelcw8" path="res://resources/SongData.gd" id="1_4k0u8"]
+[ext_resource type="Script" path="res://resources/SongData.gd" id="1_4k0u8"]
 
 [resource]
 script = ExtResource("1_4k0u8")
@@ -299,12 +299,12 @@ events = Dictionary[String, Array]({
 }]],
 "Psych": []
 })
-times = [[0.0, 125.0]]
+times = [[0.0, 0, 125.0]]
 characters = {
 "girlfriend": "gf",
 "instrumental": "erect",
 "opponent": "dad",
 "player": "bf"
 }
-stage = "mainStage"
+stage = "mainStageErect"
 needs_voices = true

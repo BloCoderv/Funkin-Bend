@@ -42,7 +42,7 @@ func _process(delta):
 	and !is_holding: hold_time += delta
 	else: hold_time = 0.0
 	
-	if hold_time > Conductor.beat_step * data.sing_duration:
+	if hold_time >= Conductor.beat_step * 1.1 * data.sing_duration:
 		dance()
 		hold_time = 0.0
 
@@ -98,11 +98,11 @@ func dance():
 	else:
 		play_anim("idle")
 
-func play_anim(anim:String):
+func play_anim(anim:String, force:bool = false):
 	if !sprite_frames: return
 	
 	if sprite_frames.has_animation(anim):
-		stop()
+		if force: stop()
 		play(anim)
 		
 		offset = -data.offsets[anim]

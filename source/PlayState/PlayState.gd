@@ -106,17 +106,18 @@ func _ready() -> void:
 	setup_camera()
 	setup_stage()
 	
-	# CONDUCTOR
-	Conductor.stepHit.connect(step_hit)
-	Conductor.beatHit.connect(beat_hit)
-	Conductor.sectionHit.connect(section_hit)
+	# HITS CONNECT
+	Conductor.step_hit.connect(step_hit)
+	Conductor.beat_hit.connect(beat_hit)
+	Conductor.measure_hit.connect(measure_hit)
 	
+	# INSTRUMENTAL
 	Conductor.set_bpm(Song.bpm)
 	Conductor.stream = Song.song["Inst"]
 	Conductor.bus = "Inst"
 	Conductor.song_position = -Conductor.sec_per_beat * 1000 * 5
 	
-	# TRANSITION
+	# TRANSITION OUT
 	Screen.transition_out()
 	
 	# COUNTDOWN
@@ -326,15 +327,15 @@ func calculate_rating():
 #region CONDUCTOR HITS
 
 func step_hit(step:int) -> void:
-	health_icons["p1"].scale = Vector2(1.2, 1.2)
-	health_icons["p2"].scale = Vector2(1.2, 1.2)
-	
-	character_bopper(step)
-
-func beat_hit(beat:int) -> void:
 	pass
 
-func section_hit(section:int) -> void:
+func beat_hit(beat:int) -> void:
+	character_bopper(beat)
+	
+	health_icons["p1"].scale = Vector2(1.2, 1.2)
+	health_icons["p2"].scale = Vector2(1.2, 1.2)
+
+func measure_hit(section:int) -> void:
 	Cam_HUD.scale += Vector2(0.03, 0.03)
 	Camera.zoom = \
 	Vector2(cam_zoom, cam_zoom) + Vector2(0.015, 0.015)
@@ -429,12 +430,12 @@ func execute_psych_event(event:String, value1, value2):
 func player_sing(data:int, is_sustain:bool):
 	var anim:String = Util.SING_ANIMS[data]
 	characters["player"].hold_time = 0.0
-	characters["player"].play_anim(anim)
+	characters["player"].play_anim(anim, true)
 
 func opponent_sing(data:int, is_sustain:bool):
 	var anim:String = Util.SING_ANIMS[data]
 	characters["opponent"].hold_time = 0.0
-	characters["opponent"].play_anim(anim)
+	characters["opponent"].play_anim(anim, true)
 	
 #endregion
 

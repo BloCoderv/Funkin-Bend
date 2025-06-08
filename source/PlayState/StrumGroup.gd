@@ -17,20 +17,22 @@ func generate_strums():
 	var separation:float = (SIZE + SEPARATION) * SCALE
 	
 	## PLAYER
-	var x:int = Global.SCREEN_SIZE.x - MARGIN - (separation * MANIA)
+	var x:int = int( Global.SCREEN_SIZE.x - MARGIN - (separation * MANIA) )
 	
 	if Preferences.middlescroll:
-		x = (Global.SCREEN_SIZE.x / 2) - (separation * (MANIA + 1)) / 2
-		x += separation / 2
+		x = int( (Global.SCREEN_SIZE.x / 2) - (separation * (MANIA + 1)) / 2 )
+		x += int( separation / 2 )
 	
-	var strum_y:int = 104 if !Preferences.downscroll else Global.SCREEN_SIZE.y - 104
+	var strum_y:int = 104
+	if Preferences.downscroll: strum_y = Global.SCREEN_SIZE.y - 104
+	
 	generate_new_strum(Vector2(x, strum_y), false)
 	
 	## OPPONENT
 	var margin:float = MARGIN
 	
 	if Preferences.middlescroll:
-		var sep:float = 160 * 0.5
+		var sep:float = (SEPARATION + SIZE) * 0.5
 		margin = (x / 2) - (sep * (MANIA + 1)) / 2
 	
 	generate_new_strum(Vector2(margin , strum_y), true)
@@ -55,7 +57,6 @@ func generate_strums():
 func generate_new_strum(
 offset:Vector2, opponent:bool, mania:int = 3) -> void:
 	for strum in range(mania + 1):
-		
 		var new:StrumNote = STRUM_NOTE_SCENE.instantiate()
 		
 		new.position = offset

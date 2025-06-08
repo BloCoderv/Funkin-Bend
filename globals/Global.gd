@@ -8,6 +8,8 @@ const NOTE_HOLD = preload("res://assets/images/ui/NOTE_hold_assets.png")
 const SPLASHES_TEXTURE = preload("res://assets/images/ui/noteSplashes.tres")
 const HOLD_COVER_TEXTURE = preload("res://assets/images/ui/holdCover.tres")
 
+const SPLASHES_SCENE = preload("res://scenes/notes/Splashes.tscn")
+
 ## GAME PRELOAD
 const ICON_NONE = preload("res://assets/images/icons/icon-face.png")
 

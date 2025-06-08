@@ -7,9 +7,7 @@ var note_in_strum:Note = null
 var splashes:AnimatedSprite2D = null
 
 var data:int = 0
-
 var direction:String = "Left"
-var color_of_direction:String = "Purple"
 
 var opponent:bool = false
 var downscroll:bool = false
@@ -20,37 +18,17 @@ func _ready():
 	# TEXTURE
 	sprite_frames = Global.STRUM_NOTES
 	
-	# DIRECTION
 	match data:
-		# 0: 
-		#	direction = "Left"
-		#	color_of_direction = "Purple"
-		1: 
-			direction = "Down"
-			color_of_direction = "Blue"
-		2: 
-			direction = "Up"
-			color_of_direction = "Green"
-		3: 
-			direction = "Right"
-			color_of_direction = "Red"
+		1: direction = "Down"
+		2: direction = "Up"
+		3: direction = "Right"
 	
 	play_anim("static")
 	
 	if !opponent or (Preferences.opponent_splashes
-	and Preferences.opponent_notes): splashes_setup()
-
-func splashes_setup():
-	splashes = AnimatedSprite2D.new()
-	splashes.sprite_frames = Global.SPLASHES_TEXTURE
-	splashes.modulate.a = Preferences.splash_opacity
-	splashes.visible = false
-	splashes.animation_finished.connect(
-		func():
-			splashes.visible = false
-	)
-	splashes.scale = Vector2(1.3, 1.3)
-	add_child(splashes)
+	and Preferences.opponent_notes):
+		splashes = Global.SPLASHES_SCENE.instantiate()
+		add_child(splashes)
 
 func _process(delta):
 	if reset_time > 0:
@@ -61,17 +39,15 @@ func _process(delta):
 
 # PLAYER STUFF
 var note_was_hit:bool = false
-func _input(event):
+func _unhandled_input(event):
 	if event == InputEventMouse \
 	or opponent or playstate.botplay: return
 	
 	if Input.is_action_just_pressed("note%s" % data):
-		
 		if note_in_strum: playstate.player_hit(note_in_strum)
 		else: 
 			if !Preferences.ghost_tapping: playstate.miss_note(data)
 			play_anim("press")
-		
 	if Input.is_action_just_released("note%s" % data):
 		play_anim("static")
 		
@@ -91,20 +67,9 @@ func play_anim(anim:String):
 		play(anim_to_play)
 
 func splash_note():
-	if !splashes: return
-	
-	splashes.stop()
-	splashes.sprite_frames = Global.SPLASHES_TEXTURE
-	
-	splashes.visible = true
-	var id = randi_range(1, 2)
-	splashes.play("noteImpact{0}{1}".format([ direction, id ]))
+	if splashes:
+		splashes.play_note_splash(direction)
 
 func splash_hold_note():
-	if !splashes: return
-	
-	splashes.stop()
-	splashes.sprite_frames = Global.HOLD_COVER_TEXTURE
-	
-	splashes.visible = true
-	splashes.play("holdCoverEnd" + color_of_direction)
+	if splashes:
+		splashes.play_hold_cover_splash(data)

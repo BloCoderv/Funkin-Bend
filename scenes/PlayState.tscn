@@ -90,7 +90,6 @@ vertical_alignment = 1
 [node name="ScreenEssentials" parent="UI" instance=ExtResource("10_hctgy")]
 
 [node name="Camera" type="Camera2D" parent="."]
-visible = false
 z_index = 1
 
 [node name="CountdownTimer" type="Timer" parent="."]

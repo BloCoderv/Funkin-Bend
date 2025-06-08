@@ -27,8 +27,7 @@ func _process(delta):
 
 
 func popup_rating(rat:String):
-	if !Preferences.popup_limit:
-		return
+	if Preferences.popup_limit < 1: return
 	
 	# IMAGE
 	var rat_image:Texture2D = null
@@ -39,10 +38,11 @@ func popup_rating(rat:String):
 		return
 	
 	# RATING NODE
-	var rating:TextureRect = TextureRect.new()
+	var rating:TextureRect = null
 	
-	if Preferences.popup_limit <= ratings.get_child_count() - 1:
-		rating = ratings.get_child(ratings.get_child_count() - 1)
+	if Preferences.popup_limit == ratings.get_child_count():
+		rating = ratings.get_child(0)
+		ratings.move_child(rating, ratings.get_child_count() - 1)
 		rating.get_meta("tween").kill()
 	else:
 		rating = TextureRect.new()

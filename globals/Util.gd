@@ -14,6 +14,8 @@ const PIXEL_PER_MS = 0.45
 const SING_ANIMS = ["singLEFT", "singDOWN", "singUP", "singRIGHT"]
 const SING_ANIM_ID = "sing"
 
+const SPLASHES_SCALE = 1.4
+
 #endregion
 
 #region Functions

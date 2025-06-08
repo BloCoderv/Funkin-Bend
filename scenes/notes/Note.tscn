@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://dfnt37xcosfoy"]
 
-[ext_resource type="Script" uid="uid://bmbn4v252smto" path="res://source/objects/Note.gd" id="1_8yibj"]
+[ext_resource type="Script" uid="uid://bmbn4v252smto" path="res://source/notes/Note.gd" id="1_8yibj"]
 [ext_resource type="Texture2D" uid="uid://c34b3hq6dnpyh" path="res://assets/images/ui/notes.png" id="1_ftjpg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2x7qj"]

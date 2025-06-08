@@ -4,8 +4,8 @@ var song:Dictionary[String, AudioStream] = {} # Inst, VoicesPlayer, VoicesOppone
 
 var song_name:String = ""
 
-var song_id:String = "sporting" # CAN CHANGE
-var song_mix:String = "" # CAN CHANGE
+var song_id:String = "lit-up" # CAN CHANGE
+var song_mix:String = "bf" # CAN CHANGE
 
 var stage:String = "mainStage"
 

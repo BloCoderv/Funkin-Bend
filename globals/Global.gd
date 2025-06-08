@@ -2,6 +2,7 @@ extends Node
 
 
 ## NOTES PRELOAD
+const STRUM_NOTES = preload("res://assets/images/ui/noteStrumline.tres")
 const NOTES = preload("res://assets/images/ui/notes.tres")
 const NOTE_HOLD = preload("res://assets/images/ui/NOTE_hold_assets.png")
 const SPLASHES_TEXTURE = preload("res://assets/images/ui/noteSplashes.tres")

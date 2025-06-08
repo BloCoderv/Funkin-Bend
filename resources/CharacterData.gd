@@ -92,6 +92,8 @@ static func convert_to_bend_from_psych(path:String) -> CharacterData:
 	return res
 
 static func convert_to_bend(path:String) -> CharacterData:
+	## UNFINISHED!!
+	
 	var json = FileAccess.open(path, FileAccess.READ)
 	var data = JSON.parse_string(json.get_as_text()) as Dictionary
 	json.close()

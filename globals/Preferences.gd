@@ -8,15 +8,17 @@ extends Node
 
 var hit_anim:bool = true # GLOW ON HIT
 var notes_behind_strum:bool = false
-var sustain_behind_strum:bool = true
+var sustain_behind_strum:bool = false
 
 var hold_splash_end:bool = true
 
-var strumline_bg:float = 0.5
+var strumline_bg:float = 0.6
 
 ## SCROLL
 var downscroll:bool = false
 var middlescroll:bool = true
+
+var ghost_tapping:bool = true
 
 var auto_pause:bool = false
 
@@ -26,7 +28,7 @@ var judge_window:Dictionary = {"sick": 45, "good": 90, "bad": 135}
 
 #region VISUALS
 
-var opponent_notes:bool = false
+var opponent_notes:bool = true
 var opponent_hit:bool = true # GLOW ON HIT
 var opponent_splashes:bool = false # SPLASH ON HIT
 
@@ -42,7 +44,7 @@ var notes_opacity:float = 1.0
 var combo_offset:Vector2 = Vector2.ZERO
 var rating_offset:Vector2 = Vector2.ZERO
 
-var safe_offset:float = 10.0
+var safe_offset:float = 10.0 # Default: 10.0
 
 #endregion
 
@@ -53,6 +55,6 @@ var stages:bool = false
 
 var characters:bool = true
 
-var popup_limit:int = 1
+var popup_limit:int = 5 # Default: 5
 
 #endregion

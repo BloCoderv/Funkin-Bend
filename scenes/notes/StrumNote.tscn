@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ouqx1hvb3mjo"]
+
+[ext_resource type="Script" uid="uid://chh7qstm45pf4" path="res://source/notes/StrumNote.gd" id="1_or3ga"]
+
+[node name="StrumNote" type="AnimatedSprite2D"]
+script = ExtResource("1_or3ga")

@@ -16,6 +16,8 @@ const SING_ANIM_ID = "sing"
 
 #endregion
 
+#region Functions
+
 static func floor_decimals(val:float, decimals:int):
 	var result:float = floor(val * pow(10, decimals)) / pow(10, decimals)
 	if decimals < 1:
@@ -76,3 +78,5 @@ static func scale_image(image:Image, scale:float) -> Image:
 	)
 	img.resize(size.x, size.y, Image.INTERPOLATE_LANCZOS)
 	return img
+
+#endregion

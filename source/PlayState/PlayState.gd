@@ -236,7 +236,10 @@ func judge_note(diff) -> Dictionary:
 	return {"name": "shit", "percent": 0.0, "score": 50}
 
 func player_hit(note:Note):
+	
 	var strum:StrumNote = StrumGroup.player_strums[note.strum_data]
+	strum.note_was_hit = true
+	
 	if Preferences.hit_anim: strum.play_anim("confirm")
 	
 	note.was_hit = true
@@ -244,9 +247,6 @@ func player_hit(note:Note):
 		note.is_holding = true
 		note.self_modulate.a = 0.0
 	else: NoteGroup.remove_note(note)
-	
-	# HEALTH
-	health_bar.value += Util.HEALTH_GAIN
 	
 	# RATING
 	var rating:Dictionary = judge_note(abs(Conductor.song_position - note.time))
@@ -257,11 +257,14 @@ func player_hit(note:Note):
 	
 	popup_group.popup_rating(rating["name"])
 	
+	# HEALTH
+	health_bar.value += Util.HEALTH_GAIN
+	
 	# SCORES
 	song_hits += 1
 	song_score += rating["score"]
-	combo += 1
 	
+	combo += 1
 	popup_group.popup_combo(combo)
 	
 	characters["player"].is_holding = true
@@ -292,14 +295,15 @@ func miss_note(direction:int, note:Note = null, kill:bool = false):
 	elif note:
 		health_bar.value -= int(note.length / 10)
 		song_misses += 2
-	song_score -= 10
 	
 	# RATING
-	total_played += 1
-	combo = 0
+	if note:
+		total_played += 1
+		combo = 0
+	song_score -= 10
 	
 	# CHAR
-	characters["player"].play_anim(Util.SING_ANIMS[note.strum_data] + "miss")
+	characters["player"].play_anim(Util.SING_ANIMS[direction] + "miss")
 	
 	if kill: NoteGroup.remove_note(note)
 	update_scores()

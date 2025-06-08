@@ -38,7 +38,7 @@ func convert_data():
 			return
 		
 		var song_data:SongData = SongData.convert_to_bend(meta_path, chart_path)
-		ResourceSaver.save(song_data, 
+		ResourceSaver.save(song_data,
 			dir_path.path_join("Data%s.tres" % mix.text))
 		
 		if delete_files:

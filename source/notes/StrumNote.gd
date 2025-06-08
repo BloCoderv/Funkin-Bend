@@ -17,6 +17,9 @@ var downscroll:bool = false
 var reset_time:float = 0.0 # RETURN TO 'STATIC' ANIMATION
 
 func _ready():
+	# TEXTURE
+	sprite_frames = Global.STRUM_NOTES
+	
 	# DIRECTION
 	match data:
 		# 0: 
@@ -57,22 +60,27 @@ func _process(delta):
 			play_anim("static")
 
 # PLAYER STUFF
+var note_was_hit:bool = false
 func _input(event):
-	if opponent or playstate.botplay: return
+	if event == InputEventMouse \
+	or opponent or playstate.botplay: return
 	
 	if Input.is_action_just_pressed("note%s" % data):
-		if note_in_strum:
-			playstate.player_hit(note_in_strum)
-		else:
+		
+		if note_in_strum: playstate.player_hit(note_in_strum)
+		else: 
+			if !Preferences.ghost_tapping: playstate.miss_note(data)
 			play_anim("press")
+		
 	if Input.is_action_just_released("note%s" % data):
 		play_anim("static")
 		
-		# CHARACTER PLAYER
-		playstate.characters["player"].hold_time = 0.0
-		playstate.characters["player"].is_holding = false
+		if note_was_hit:
+			note_was_hit = false
+			playstate.characters["player"].hold_time = 0.0
+			playstate.characters["player"].is_holding = false
 		
-		if note_in_strum:
+		if note_in_strum and note_in_strum.is_sustain:
 			NoteGroup.check_sustain_hit(note_in_strum, get_tree().current_scene)
 
 func play_anim(anim:String):

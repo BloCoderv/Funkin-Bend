@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dsm5iofaahx5g"]
+
+[ext_resource type="Script" uid="uid://bhn5nu0am0ckr" path="res://source/notes/Splashes.gd" id="1_gjfxt"]
+
+[node name="Splashes" type="AnimatedSprite2D"]
+script = ExtResource("1_gjfxt")

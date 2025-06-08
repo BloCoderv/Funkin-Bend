@@ -73,34 +73,34 @@ func popup_rating(rat:String):
 func popup_combo(combo:int):
 	var temp_combo:String = str(combo).pad_zeros(3)
 	
-	for l in temp_combo.length():
+	for num in temp_combo.length():
 		var combo_node:TextureRect = null
 		
-		# RECYCLING
-		if l > combo_nums.get_child_count() - 1:
+		if num > combo_nums.get_child_count() - 1:
 			combo_node = TextureRect.new()
 			combo_nums.add_child(combo_node)
-		else:
-			combo_node = combo_nums.get_child(l)
+		else: # RECYCLING
+			combo_node = combo_nums.get_child(num)
 			combo_node.get_meta("tween").kill()
+			combo_node.modulate.a = 1
 		
-		combo_node.texture = get_combo_number(temp_combo[l])
+		combo_node.texture = get_combo_number(temp_combo[num])
 		combo_node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		
 		combo_node.size = \
 		combo_node.texture.get_size() * Vector2(0.45, 0.45)
 		
 		combo_node.position.x = \
-		(Global.SCREEN_SIZE.x * 0.507) + (36 * (l + 1)) - 65;
+		(Global.SCREEN_SIZE.x * 0.507) + (36 * (num + 1)) - 65
 		
 		combo_node.position.y = (Global.SCREEN_SIZE.y * 0.44)
-
 		combo_node.position += Preferences.combo_offset
-		combo_node.modulate.a = 1
 		
-		combo_node.set_meta(
-			"velocity", Vector2(randf_range(-5, 5), -randi_range(130, 150)))
-		combo_node.set_meta("acceleration", Vector2(0, randi_range(250, 300)))
+		var vel = Vector2(randf_range(-5, 5), -randi_range(130, 150))
+		combo_node.set_meta("velocity", vel)
+		
+		var acc = Vector2(0, randi_range(250, 300))
+		combo_node.set_meta("acceleration", acc)
 		
 		# TWEEN
 		var tw = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)

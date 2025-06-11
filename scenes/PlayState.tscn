@@ -118,4 +118,6 @@ centered = false
 script = ExtResource("7_4wsi4")
 metadata/_custom_type_script = "uid://kcdcy05olunk"
 
+[node name="Events" type="Node" parent="."]
+
 [connection signal="timeout" from="CountdownTimer" to="CountdownTimer" method="countdown_tick"]

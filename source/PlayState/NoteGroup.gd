@@ -132,9 +132,12 @@ func _note_process(delta:float, note:Note):
 		!note.is_sustain or !note.was_hit):
 			playstate.miss_note(note.strum_data, note)
 			note.too_late = true
+			
 			if note_strum.note_in_strum == note:
 				note_strum.note_in_strum = null
+				
 			invalidate_note(note)
+			return
 	
 	## PLAYER
 	if note.must_press:
@@ -161,18 +164,22 @@ func _note_process(delta:float, note:Note):
 			and note.time < Conductor.song_position + safe_offset
 		)
 		
-		if note.can_hit and (
+		var can_strum:bool = (
 			!note_strum.note_in_strum
 			or !note_strum.note_in_strum.can_hit
+			or note_strum.note_in_strum.too_late
 			or note_strum.note_in_strum.time > note.time
 			or note_strum.note_in_strum.was_hit
-		): note_strum.note_in_strum = note
+		)
+		
+		if note.can_hit and can_strum:
+			note_strum.note_in_strum = note
 		
 		var can_hold_sustain:bool = (
 			note.was_hit and note.is_sustain
 			and (
 				playstate.botplay or
-				note.is_holding and !note.too_late
+				note.is_holding
 			)
 		)
 		

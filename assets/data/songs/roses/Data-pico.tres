@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="SongData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="SongData" load_steps=2 format=3 uid="uid://c465i8ren3hv5"]
 
-[ext_resource type="Script" path="res://resources/SongData.gd" id="1_uouog"]
+[ext_resource type="Script" uid="uid://din72symelcw8" path="res://resources/SongData.gd" id="1_uouog"]
 
 [resource]
 script = ExtResource("1_uouog")

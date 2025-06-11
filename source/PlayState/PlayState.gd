@@ -25,6 +25,10 @@ class_name PlayState
 	"p2": $UI/HUD/HealthBar/IconP2 # OPPONENT
 }
 
+## SCRIPT
+@onready var events_node:Node = $Events
+var events:Dictionary[String, CustomScript] = {}
+
 ## CHARACTERS
 @onready var characters:Dictionary[String, Character] = {
 	"player": $Player,
@@ -79,10 +83,15 @@ func _process(delta):
 #region READY
 
 func _ready() -> void:
+	# STRUMS
 	strum_group.generate_strums()
 	
+	# SONG
 	var err:String = Song.load_song()
 	if err: OS.alert(err, "SONG LOAD ERROR")
+	
+	# EVENTS
+	load_events()
 	
 	# LOADING CHARACTERS
 	for char in characters:
@@ -362,6 +371,28 @@ func character_bopper(beat:int) -> void:
 
 #region EVENTS
 
+func load_events() -> void:
+	for ev in Song.chart_events["Funkin"]:
+		if !events.has(ev[1]):
+			if !FileAccess.file_exists("res://assets/events/%s.gd" % ev[1]):
+				continue
+			var scr:GDScript = load("res://assets/events/%s.gd" % ev[1])
+			
+			var node:Node = Node.new()
+			events_node.add_child(node)
+			node.set_script(scr)
+			events[ev[1]] = node
+	for ev in Song.chart_events["Psych"]:
+		if !events.has(ev[1]):
+			if !FileAccess.file_exists("res://assets/events/%s.gd" % ev[1]):
+				continue
+			var scr:GDScript = load("res://assets/events/%s.gd" % ev[1])
+			
+			var node:Node = Node.new()
+			events_node.add_child(node)
+			node.set_script(scr)
+			events[ev[1]] = node
+
 func _event_process():
 	for ev in Song.chart_events["Funkin"]:
 		if ev[0] > Conductor.song_position: break
@@ -374,58 +405,12 @@ func _event_process():
 		Song.chart_events["Psych"].erase(ev)
 
 func execute_funkin_event(event:String, values):
-	match event:
-		"FocusCamera":
-			
-			var char = ""
-			match int(values["char"]):
-				0: char = "player"
-				1: char = "opponent"
-				2: char = "gf"
-			
-			var pos = Vector2(0, 0)
-			if values.has("x"):
-				pos.x = values["x"]
-			if values.has("y"):
-				pos.y = values["y"]
-			
-			var lerp = true
-			if values.has("ease"):
-				lerp = (values["ease"] != "INSTANT")
-			
-			set_camera_target(char, pos, lerp)
-		
-		"ZoomCamera":
-			
-			var zoom:float = 1.0
-			var duration:float = 4.0
-			var ease:String = "linear"
-			var direct:bool = false
-			
-			if !(values is Dictionary):
-				duration *= Conductor.sec_per_beat
-				tween_camera_zoom(values, duration, ease)
-				return
-			
-			if values.has("zoom"):
-				zoom = values["zoom"]
-				
-			if values.has("duration"):
-				duration = values["duration"]
-			
-			if values.has("ease"):
-				ease = values["ease"]
-				duration = 0 if ease == "INSTANT" else duration
-			
-			if values.has("mode"):
-				direct = (values["mode"] == "direct")
-			
-			duration *= Conductor.sec_per_beat
-			
-			tween_camera_zoom(zoom, duration, ease, direct)
+	if events.has(event) and events[event].has_method("_on_event"):
+		events[event]._on_event(values)
 
 func execute_psych_event(event:String, value1, value2):
-	pass
+	if events.has(event) and events[event].has_method("_on_event"):
+		events[event]._on_event(value1, value2)
 
 #endregion
 

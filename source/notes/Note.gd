@@ -46,17 +46,17 @@ func setup_sustain() -> void:
 		
 		sustain.texture = textures[0]
 		sustain.size.x = sustain.texture.get_size().x
+	sustain.show_behind_parent = true
 	
 	if Preferences.sustain_behind_strum:
 		sustain.z_index = -2
-		sustain.show_behind_parent = true
 		sustain_end.z_index = -2
-		sustain_end.show_behind_parent = true
 	
 	# SUSTAIN END
 	end_tex = AtlasTexture.new()
 	end_tex.atlas = textures[1]
 	sustain_end.texture = end_tex
+	sustain_end.show_behind_parent = true
 	
 	change_sustain_height(
 	NoteGroup.get_sustain_height(length))

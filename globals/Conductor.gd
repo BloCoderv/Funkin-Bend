@@ -51,8 +51,8 @@ func _physics_process(delta):
 		last_bpm_change.step_time +
 		floor(song_position - last_bpm_change.time) / (beat_step * 1000)
 	)
-	beat = floor(step / 4)
-	measure = floor(step / 16)
+	beat = floor(step / 4.0)
+	measure = floor(step / 16.0)
 	
 	if prev_step != step:
 		step_hit.emit(step)

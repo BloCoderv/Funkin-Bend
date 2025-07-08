@@ -1,7 +1,6 @@
 extends Control
 
 
-const TRANSITION_TEXTURE = preload("res://assets/images/ui/transitionGradient.png")
 @onready var transition = $Transition
 
 @onready var info:Label = $Info
@@ -30,7 +29,6 @@ func toggle_load_text(loading:bool):
 	$Loading.visible = loading
 
 func transition_in():
-	transition.texture = TRANSITION_TEXTURE
 	transition.position.y = 720
 	transition.scale.y = 1
 	
@@ -42,7 +40,6 @@ func transition_in():
 	transition.texture = null
 
 func transition_out():
-	transition.texture = TRANSITION_TEXTURE
 	transition.position.y = 1080.0
 	transition.scale.y = -1
 	

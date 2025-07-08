@@ -18,23 +18,6 @@ var camera_offset:Vector2 = Vector2(0, 0)
 
 var dance_beat_num:int = 2
 
-func _ready():
-	connect("frame_changed", check_frame_rotation)
-	connect("animation_changed", check_frame_rotation)
-
-func check_frame_rotation():
-	if !data: return
-	
-	if data.rotated_frames.has(animation) \
-	and frame + 1 in data.rotated_frames[animation]:
-		rotation = deg_to_rad(-90.0)
-		scale.x = -data.scale.x
-		flip_h = true
-	else:
-		rotation = deg_to_rad(0.0)
-		scale.x = data.scale.x
-		flip_h = false
-
 func _process(delta):
 	if !data: return
 	
@@ -76,13 +59,11 @@ func load_character(char:String, player:bool):
 	if sprite_frames.has_animation("danceLeft") \
 	and sprite_frames.has_animation("danceRight"):
 		dance_idle = true
-	else:
-		dance_idle = false
+	else: dance_idle = false
 	
-	if dance_idle:
-		dance_beat_num = 1
-	else:
-		dance_beat_num = 2
+	if dance_idle: dance_beat_num = 2
+	else: dance_beat_num = 1
+	
 	dance()
 
 var danced:bool = false
@@ -98,12 +79,14 @@ func dance():
 	else:
 		play_anim("idle")
 
-func play_anim(anim:String, force:bool = false):
+func play_anim(anim:String, force:bool = false, backwards:bool = false):
 	if !sprite_frames: return
 	
 	if sprite_frames.has_animation(anim):
 		if force: stop()
-		play(anim)
+		
+		if backwards: play_backwards(anim)
+		else: play(anim)
 		
 		offset = -data.offsets[anim]
 		
@@ -117,7 +100,7 @@ func play_anim(anim:String, force:bool = false):
 				danced = false
 			elif anim == "singUP" or anim == "singDOWN":
 				danced = !danced
-	else:
+	elif !anim.ends_with("miss"):
 		print_debug("{0} not has animation {1}".format([ character, anim ]))
 
 func get_mid_point() -> Vector2:

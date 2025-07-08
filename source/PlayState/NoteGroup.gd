@@ -18,7 +18,17 @@ static var safe_offset:float = 0.0
 static var strum_anim_time:float = 0.0
 
 static func load_notes():
+	var times:Dictionary[int, Array] = {}
+	
+	# CLEAR
+	notes = []
+	unspawn_notes = []
+	
 	for note in Song.chart_notes:
+		# PREVENTS DOUBLE NOTES
+		if times.has(int(note[0])) and \
+		note[1] in times[int(note[0])]: continue
+		
 		var new:Note = NOTE_SCENE.instantiate()
 		
 		new.time = note[0]
@@ -37,6 +47,10 @@ static func load_notes():
 		
 		if new.data > 3: new.must_press = false
 		
+		if !times.has(int(new.time)):
+			times[int(new.time)] = [new.data]
+		else:
+			times[int(new.time)].append(new.data)
 		unspawn_notes.append(new)
 
 #region Notes Functions
@@ -109,7 +123,7 @@ func _note_process(delta:float, note:Note):
 	note.rotation = note_strum.rotation
 	note.modulate.a = note_strum.modulate.a
 	
-	var sus_k_offset = 0 if !note.sustain else note.sustain.size.y
+	var sus_k_offset = 0.0 if !note.sustain else note.sustain.size.y
 	var kill_note:bool = false
 	
 	if note_strum.downscroll:
@@ -232,3 +246,7 @@ func spawn_notes_of(timeMS:float) -> void:
 		add_child(note)
 		notes.append(note)
 		unspawn_notes.erase(note)
+
+func clear_notes():
+	for note in get_children():
+		note.queue_free()

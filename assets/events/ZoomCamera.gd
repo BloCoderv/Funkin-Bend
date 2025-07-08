@@ -1,5 +1,7 @@
 extends CustomScript
 
+##   <  -----  ZoomCamera  -----  >   ##
+##   : Essential for Some Songs
 
 var playstate:PlayState = get_parent().get_parent()
 

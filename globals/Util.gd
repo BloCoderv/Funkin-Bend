@@ -6,8 +6,10 @@ class_name Util
 
 #region CONSTANTS
 
-const HEALTH_GAIN = 2
-const HEALTH_LOSS = 4
+const HEALTH_MAX = 2.0
+const HEALTH_MIN = 0.0
+const HEALTH_GAIN = 0.02
+const HEALTH_LOSS = 0.01
 
 const PIXEL_PER_MS = 0.45
 
@@ -15,6 +17,9 @@ const SING_ANIMS = ["singLEFT", "singDOWN", "singUP", "singRIGHT"]
 const SING_ANIM_ID = "sing"
 
 const SPLASHES_SCALE = 1.4
+
+const COLOR_HEALTH_RED = Color(255 / 255.0, 0, 0)
+const COLOR_HEALTH_GREEN = Color(102 / 255.0, 255 / 255.0, 51 / 255.0)
 
 #endregion
 

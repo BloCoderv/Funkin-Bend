@@ -1,23 +1,21 @@
 extends Control
 
+
 @onready var type_option:OptionButton = $Type
 
 @onready var path:Button = $Path
+@onready var mix:LineEdit = $Mix
 
 @onready var file_dialog:FileDialog = $FileDialog
 
-@onready var mix:LineEdit = $Mix
+@onready var info_label:Label = $InfoLabel
+@onready var animation:AnimationPlayer = $Animation
 
-@onready var info_label = $InfoLabel
+@onready var convert_btn:Button = $Convert
 
-@onready var convert_btn = $Convert
-
-const PATH_PLACEHOLDER = "Data Path : "
+const PATH_PLACEHOLDER = "Data Path | "
 
 var delete_files:bool = false
-
-func _ready():
-	info_label.modulate.a = 0.0
 
 func convert_data():
 	var type:String = type_option.get_item_text(type_option.selected)
@@ -56,10 +54,10 @@ func convert_data():
 		var ev_path:String = ""
 		
 		for f in files:
-			var d:String = f.get_basename().split("-")[-1]
-			var file = dir_path.path_join(song + "-" + d + ".json")
+			var diff:String = f.get_basename().split("-")[-1]
+			var file = dir_path.path_join(song + "-" + diff + ".json")
 			if FileAccess.file_exists(file):
-				diffs.append(d)
+				diffs.append(diff)
 		
 		if diffs.size() == 0:
 			show_error("There are no charts in the current directory")
@@ -81,16 +79,12 @@ func convert_data():
 func show_error(err:String):
 	info_label.modulate.a = 1.0
 	info_label.text = err
-	
-	var tw = create_tween().set_trans(Tween.TRANS_CUBIC)
-	tw.tween_property(info_label, "modulate:a", 0.0, 2).set_delay(2)
+	animation.play("InfoFadeOut")
 
 func success_msg():
 	info_label.modulate.a = 1.0
 	info_label.text = "Success!"
-	
-	var tw = create_tween().set_trans(Tween.TRANS_CUBIC)
-	tw.tween_property(info_label, "modulate:a", 0.0, 2).set_delay(2)
+	animation.play("InfoFadeOut")
 
 # PATH
 func _path_pressed():

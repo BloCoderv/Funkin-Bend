@@ -4,20 +4,21 @@ var song:Dictionary[String, AudioStream] = {} # Inst, VoicesPlayer, VoicesOppone
 
 var song_name:String = ""
 
-var song_id:String = "lit-up" # CAN CHANGE
-var song_mix:String = "bf" # CAN CHANGE
+var song_id:String = "spookeez"
+var song_mix:String = "erect"
+var difficulty:String = "nightmare"
 
 var stage:String = "mainStage"
 
 var scroll_speed:float = 0.0 # 1.0
 var bpm:float = 0.0 # 100.0
-var difficulty:String = "hard" # CAN CHANGE
 
 var chart_times:Array = []
 var chart_notes:Array = []
+
 var chart_events:Dictionary[String, Array] = {
 	"Funkin": [],
-	"Psych": []
+	"Bend": []
 }
 
 var characters:Dictionary = {}
@@ -86,5 +87,3 @@ func load_song() -> String: # -> ERROR
 		return ""
 	else: 
 		return "Voices not exists"
-	
-	return ""

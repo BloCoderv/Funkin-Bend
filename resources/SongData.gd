@@ -9,7 +9,7 @@ class_name SongData
 @export var charts:Dictionary = {}
 @export var events:Dictionary[String, Array] = {
 	"Funkin": [],
-	"Psych": []
+	"Bend": []
 }
 @export var times:Array = []
 
@@ -33,14 +33,14 @@ static func convert_to_bend_from_old(
 	
 	res.display_name = data["song"]["song"]
 	
-	var gf:String = data["song"]["gfVersion"]
+	var gf:String = data["song"]["gfVersion"] if data["song"].has("gfVersion") else ""
 	
 	res.characters = {
 		"player": data["song"]["player1"],
 		"girlfriend": gf if gf != "" else "gf",
 		"opponent": data["song"]["player2"]
 	}
-	res.stage = data["song"]["stage"]
+	res.stage = data["song"]["stage"] if data["song"].has("stage") else "mainStage"
 	res.bpm = data["song"]["bpm"]
 	res.needs_voices = data["song"]["needsVoices"]
 	
@@ -106,7 +106,7 @@ static func convert_to_bend_from_old(
 	
 	for ev_time in data["song"]["events"]:
 		for event in ev_time[1]:
-			res.events["Psych"].append([
+			res.events["Bend"].append([
 				ev_time[0], event[0], event[1], event[2]
 				# TIME, EVENT, VALUE 1, VALUE 2
 			])

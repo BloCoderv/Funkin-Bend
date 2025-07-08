@@ -14,7 +14,6 @@ var hold_splash_end:bool = true
 
 var strumline_bg:float = 0.6
 
-## SCROLL
 var downscroll:bool = false
 var middlescroll:bool = true
 
@@ -28,11 +27,10 @@ var judge_window:Dictionary = {"sick": 45, "good": 90, "bad": 135}
 
 #region VISUALS
 
-var opponent_notes:bool = true
+var opponent_notes:bool = false
 var opponent_hit:bool = true # GLOW ON HIT
 var opponent_splashes:bool = false # SPLASH ON HIT
 
-## OPACITY
 var splash_opacity:float = 0.6
 var strums_opacity:float = 1.0
 var notes_opacity:float = 1.0

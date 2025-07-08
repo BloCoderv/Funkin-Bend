@@ -19,7 +19,7 @@ const SCREEN_SIZE = Vector2(1280, 720)
 
 func _ready():
 	## SETS CLEAR COLOR BLACK
-	RenderingServer.set_default_clear_color(Color.WHITE)
+	RenderingServer.set_default_clear_color(Color.BLACK)
 	
 	if Preferences.auto_pause:
 		setup_auto_pause()

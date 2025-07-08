@@ -1,5 +1,7 @@
 extends CustomScript
 
+##   <  -----  FocusCamera  -----  >   ##
+##   : Essential for Songs
 
 var playstate:PlayState = get_parent().get_parent()
 
@@ -12,9 +14,9 @@ func _on_event(values):
 	
 	var pos = Vector2(0, 0)
 	if values.has("x"):
-		pos.x = values["x"]
+		pos.x = float( values["x"] )
 	if values.has("y"):
-		pos.y = values["y"]
+		pos.y = float( values["y"] )
 	
 	var lerp = true
 	if values.has("ease"):

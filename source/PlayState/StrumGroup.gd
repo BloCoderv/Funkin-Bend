@@ -84,3 +84,10 @@ offset:Vector2, opponent:bool, mania:int = 3) -> void:
 		strum_notes.append(new)
 		if !opponent: player_strums.append(new)
 		else: opponent_strums.append(new)
+
+static func clear_strumlines():
+	for strum in strum_notes: 
+		strum.queue_free()
+	strum_notes = []
+	opponent_strums = []
+	player_strums = []

@@ -1,26 +1,32 @@
-[gd_scene load_steps=3 format=3 uid="uid://duumxr33dyeeu"]
+[gd_scene load_steps=2 format=3 uid="uid://fmhipd6ry31n"]
 
-[ext_resource type="Script" uid="uid://ccc1wgoxhncpy" path="res://source/objects/Bar.gd" id="1_epq4u"]
-[ext_resource type="Texture2D" uid="uid://c33vpgwadth1w" path="res://assets/images/ui/healthBar.png" id="1_ovpq0"]
+[ext_resource type="Script" uid="uid://dr71in2qye3uk" path="res://source/objects/Bar.gd" id="1_epq4u"]
 
-[node name="Bar" type="TextureRect"]
-texture = ExtResource("1_ovpq0")
+[node name="Bar" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 623.0
+offset_bottom = 43.0
 script = ExtResource("1_epq4u")
 
-[node name="left" type="ColorRect" parent="."]
-show_behind_parent = true
-layout_mode = 0
-offset_left = 3.0
-offset_top = 3.0
-offset_right = 3.0
-offset_bottom = 16.0
+[node name="Left" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 311.5
+grow_vertical = 2
 color = Color(1, 0, 0, 1)
 
-[node name="right" type="ColorRect" parent="."]
-show_behind_parent = true
-layout_mode = 0
-offset_left = 3.0
-offset_top = 3.0
-offset_right = 598.0
-offset_bottom = 16.0
-color = Color(0, 1, 0, 1)
+[node name="Right" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 311.5
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(-1, 1)
+color = Color(0.4, 1, 0.2, 1)
+
+[connection signal="resized" from="." to="." method="_on_resized"]

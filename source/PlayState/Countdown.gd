@@ -1,10 +1,11 @@
 extends Timer
 
 @onready var countdown = $"../UI/HUD/Countdown"
+@onready var playstate:PlayState = get_parent()
 
-var counter:int = -1
+var counter:int = 0
 func countdown_tick():
-	counter += 1
+	playstate.character_bopper(counter)
 	match counter:
 		0: Audio.play(ResourceLoader.load(
 				"res://assets/sounds/countdown/introTHREE.ogg", 
@@ -32,8 +33,10 @@ func countdown_tick():
 				"AudioStream", ResourceLoader.CACHE_MODE_IGNORE))
 		4: 
 			stop()
-			countdown.queue_free()
+			countdown.texture = null
+			counter = 0
 			get_parent().start_song() # PLAYSTATE
+	counter += 1
 
 func show_countdown(texture:Texture2D):
 	countdown.texture = texture

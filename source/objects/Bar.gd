@@ -1,72 +1,55 @@
-extends TextureRect
-class_name Bar
+@tool
+extends Control
 
-@onready var left:ColorRect = $left
-@onready var right:ColorRect = $right
 
-var smooth:bool = true # MAKES BAR VALUE LERP
+enum Direction {
+	LEFT_TO_RIGHT,
+	RIGHT_TO_LEFT
+}
 
-var left_to_right:bool = false
-var max_value:float = 100.0
-var value:float = 0.0:
+@onready var left:ColorRect = get_node("Left")
+@onready var right:ColorRect = get_node("Right")
+
+@export var bar_direction:Direction = Direction.LEFT_TO_RIGHT:
+	set(v): 
+		bar_direction = v
+		update_bar()
+
+@export var color_left:Color = Util.COLOR_HEALTH_RED:
 	set(v):
-		value = clamp(v, 0, max_value)
-		_on_value_changed(value)
+		color_left = v
+		left.color = v
 
-var color_left:Color = Color.RED
-var color_right:Color = Color.GREEN
+@export var color_right:Color = Util.COLOR_HEALTH_GREEN:
+	set(v):
+		color_right = v
+		right.color = v
 
-var margin:Vector2 = Vector2(6, 6)
-var bar_middle:float = 0.0
-var middle_target:float = 0.0
-var bar_target:float = 0.0
+@export var min_value:float = 0.0:
+	set(v): 
+		min_value = v
+		update_bar()
 
-var texture_size:Vector2 = texture.get_size()
-var offset:Vector2 = Vector2.ZERO
+@export var max_value:float = 100.0:
+	set(v): 
+		max_value = v
+		update_bar()
 
-func _ready():
-	_on_value_changed(value)
-	left.color = color_left
-	right.color = color_right
-	if !smooth:
-		set_process(false)
+@export var value:float = 50.0: 
+	set(v): 
+		value = clampf(v, min_value, max_value)
+		update_bar()
 
-func _process(delta):
-	left.size.x = lerp(left.size.x, bar_target, delta * 6)
+func update_bar():
+	if left == null: return
 	
-	right.size.x = texture_size.x - left.size.x
-	right.position.x = left.size.x + offset.x
+	var percent:float = remap(value, min_value, max_value, 0, 100)
 	
-	bar_middle = right.position.x
-
-func _on_value_changed(new:float):
-	texture_size = texture.get_size()
-	offset = margin / 2.0
-	
-	texture_size.x -= margin.x
-	texture_size.y -= margin.x
-	
-	left.size.y = texture_size.y
-	right.size.y = texture_size.y
-	
-	if left_to_right:
-		bar_target = lerp(0.0, texture_size.x, value / 100.0)
+	if bar_direction == Direction.LEFT_TO_RIGHT: 
+		left.size.x = lerp(0.0, size.x, percent / 100)
 	else:
-		bar_target = lerp(0.0, texture_size.x, 1 - value / 100.0)
-	
-	left.position = offset
-	right.position.y = offset.y
-	
-	if !smooth:
-		left.size.x = bar_target
-		
-		right.size.x = texture_size.x - left.size.x
-		right.position.x = left.size.x + offset.x
-		
-		bar_middle = right.position.x
+		left.size.x = lerp(0.0, size.x, 1 - percent / 100)
+	right.size.x = size.x - left.size.x
 
-func change_color(c_left:Color, c_right:Color):
-	color_left = c_left
-	color_right = c_right
-	left.color = color_left
-	right.color = color_right
+func _on_resized():
+	update_bar()

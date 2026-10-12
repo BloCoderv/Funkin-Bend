@@ -12,3 +12,9 @@ func play(stream: AudioStream, volume:float = 0.0, bus:String = "Master"):
 	stream_node.play()
 	
 	stream_node.finished.connect(func(): stream_node.queue_free())
+
+func stop_all() -> void:
+	for child:Node in get_children():
+		if child is AudioStreamPlayer:
+			child.stop()
+			child.queue_free()

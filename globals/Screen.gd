@@ -4,6 +4,8 @@ extends Control
 @onready var transition = $Transition
 
 @onready var info:Label = $Info
+@onready var loading:Label = $Loading
+@onready var loading_bar:ProgressBar = $LoadingBar
 var prev_screen_size:Vector2 = Vector2.ZERO
 
 
@@ -14,19 +16,39 @@ func _input(event):
 		else:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
+var count:float = 0.0
 func _process(delta):
-	info.text = "FPS: " + str(Engine.get_frames_per_second())
+	count += delta
+	if count > 0.2:
+		count = 0.0
+		#info.text = "FPS: " + str(Engine.get_frames_per_second())
 	
-	var screen_size:Vector2 = get_viewport().get_window().size
-	if prev_screen_size != screen_size:
-		prev_screen_size = screen_size
-		
-		var f_size = ( 1280.0 / screen_size.x ) * 16
-		info.set("theme_override_font_sizes/font_size", f_size)
+		var screen_size:Vector2 = get_viewport().get_window().size
+		if prev_screen_size != screen_size:
+			prev_screen_size = screen_size
+			
+			var f_size = ( 1280.0 / screen_size.x ) * 16
+			info.set("theme_override_font_sizes/font_size", f_size)
 
 
 func toggle_load_text(loading:bool):
 	$Loading.visible = loading
+
+func begin_asset_loading(_count:int = 1) -> void:
+	loading.visible = true
+	loading_bar.visible = true
+	loading_bar.value = 0.0
+	loading.text = "Preparing SpriteMaps..."
+
+func set_asset_loading_progress(value:float, message:String = "Loading...") -> void:
+	loading.visible = true
+	loading_bar.visible = true
+	loading_bar.value = clampf(value * 100.0, 0.0, 100.0)
+	loading.text = message
+
+func end_asset_loading() -> void:
+	loading.visible = false
+	loading_bar.visible = false
 
 func transition_in():
 	transition.position.y = 720

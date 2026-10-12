@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://ouqx1hvb3mjo"]
+[gd_scene load_steps=3 format=3 uid="uid://ouqx1hvb3mjo"]
 
 [ext_resource type="Script" uid="uid://chh7qstm45pf4" path="res://source/notes/StrumNote.gd" id="1_or3ga"]
+[ext_resource type="SpriteFrames" uid="uid://cp0qpkbh55xt4" path="res://_TEMP_StrumAnimationFrames.tres" id="1_w6l5m"]
 
 [node name="StrumNote" type="AnimatedSprite2D"]
+sprite_frames = ExtResource("1_w6l5m")
+animation = &"confirmLeft0"
+frame = 7
+frame_progress = 1.0
 script = ExtResource("1_or3ga")

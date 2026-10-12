@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3 uid="uid://tg03carqp305"]
+
+[ext_resource type="Script" uid="uid://4islbrwaqi6e" path="res://source/menus/MainMenu.gd" id="1"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.0306612, 0.0306613, 0.0484332, 1)
+
+[node name="UI" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 24.0
+offset_right = 1020.0
+offset_bottom = 696.0
+theme_override_constants/separation = 12

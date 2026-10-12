@@ -1,0 +1,41 @@
+Comparei os elementos de nota do FNF oficial com o projeto atual.
+
+Principais diferenças:
+
+- Nota comum:
+  - O FNF aplica scale, offsets, updateHitbox() e centraliza origin.
+  - O projeto usa pivot = -texture_size / 2 manualmente e não aplica offsets configuráveis da nota.
+  - O FNF reutiliza sprites; o projeto instancia e remove notas.
+- Strum/receptor:
+  - O FNF aplica a escala e os offsets do noteStrumline.
+  - Centraliza offsets/origem sempre que troca a animação.
+  - Possui uma compensação de 13px no efeito confirm para ajustar o brilho.
+  - Mantém uma janela de 0.15s para o confirm do oponente.
+  - O projeto não aplica offsets do noteStrumline, não possui essa compensação de 13px e controla o retorno das animações de forma diferente.
+- Sustain/hold:
+  - O FNF usa SustainTrail, com desenho por triângulos, clipping dinâmico, origem centralizada e offsets próprios.
+  - Também ajusta endOffset, bottomClip, flipY e antialiasing conforme o estilo.
+  - O projeto usa TextureRect, estica a textura verticalmente e altera margens/posição do final do sustain.
+- NoteSplash:
+  - No FNF é um sprite independente, com escala do estilo.
+  - Ao tocar, aplica internamente offset = (width * 0.3, height * 0.3).
+  - Também varia levemente o framerate.
+  - No projeto ele é filho do StrumNote, usa centered = true e escala compensada pela escala do pai.
+- HoldCover:
+  - No FNF é um grupo separado; o glow é colocado na posição do grupo quando o hold começa.
+  - Não existe um deslocamento fixo próprio no HoldCover.
+  - A escala vem diretamente do estilo.
+  - No projeto ele é filho do StrumNote, herdando sua posição e escala; por isso foi necessária a compensação da escala local.
+- Offsets do estilo:
+  - O FNF possui offsets para nota, sustain, strumline, splash e hold cover.
+  - O projeto agora suporta splash_offsets e hold_cover_offsets, mas ainda não suporta os offsets de nota, sustain e strumline.
+
+quero que traga esses sistemas do FNF BASE para o nosso projeto com o intuito de tirar algumas diferenças. 
+
+só quero que tenha em mente algumas excessões que eu não quero mudar agora:
+- SustainTrail
+- NoteSplash
+
+e se atente as regras da Godot. Como o filho herdar a escala do pai.
+
+Fontes: NoteSprite.hx (https://github.com/FunkinCrew/Funkin/blob/main/source/funkin/play/notes/NoteSprite.hx), StrumlineNote.hx (https://github.com/FunkinCrew/Funkin/blob/main/source/funkin/play/notes/StrumlineNote.hx), SustainTrail.hx (https://github.com/FunkinCrew/Funkin/blob/main/source/funkin/play/notes/SustainTrail.hx), NoteSplash.hx (https://github.com/FunkinCrew/Funkin/blob/main/source/funkin/play/notes/NoteSplash.hx) e NoteStyle.hx (https://github.com/FunkinCrew/Funkin/blob/main/source/funkin/play/notes/notestyle/NoteStyle.hx)

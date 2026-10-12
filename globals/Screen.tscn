@@ -45,10 +45,21 @@ theme_override_fonts/font = ExtResource("2_04weu")
 theme_override_font_sizes/font_size = 28
 text = "Loading..."
 
+[node name="LoadingBar" type="ProgressBar" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -78.0
+offset_right = 360.0
+offset_bottom = -54.0
+grow_vertical = 0
+
 [node name="Info" type="Label" parent="."]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 62.0
 offset_bottom = 31.0
-text = "FPS: 23"

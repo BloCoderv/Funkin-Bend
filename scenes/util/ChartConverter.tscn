@@ -1,18 +1,7 @@
-[gd_scene load_steps=13 format=3 uid="uid://cuyih84lc2b32"]
+[gd_scene load_steps=10 format=3 uid="uid://cuyih84lc2b32"]
 
 [ext_resource type="Script" uid="uid://vjkito1pichj" path="res://source/util/ChartConverter.gd" id="1_ap4yx"]
-[ext_resource type="Texture2D" uid="uid://ipbntrekdb3" path="res://assets/images/menu/menuDesat.png" id="2_ogypa"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ap4yx"]
-bg_color = Color(0, 0, 0, 0.6)
-
-[sub_resource type="Theme" id="Theme_ogypa"]
-/styles/1 = SubResource("StyleBoxFlat_ap4yx")
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b3vos"]
-bg_color = Color(0, 0, 0, 0.545098)
-corner_radius_top_left = 6
-corner_radius_bottom_left = 6
+[ext_resource type="Texture2D" path="res://assets/images/menu/menuDesat.png" id="2_ogypa"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pl0vx"]
 bg_color = Color(0, 0, 0, 0.6)
@@ -111,39 +100,6 @@ layout_mode = 0
 offset_right = 123.0
 offset_bottom = 31.0
 
-[node name="Type" type="OptionButton" parent="."]
-layout_mode = 0
-offset_left = 176.0
-offset_top = 130.0
-offset_right = 331.0
-offset_bottom = 179.0
-theme = SubResource("Theme_ogypa")
-theme_override_font_sizes/font_size = 20
-selected = 0
-item_count = 3
-popup/item_0/text = "NEW"
-popup/item_0/id = 0
-popup/item_1/text = "OLD"
-popup/item_1/id = 1
-popup/item_2/text = "PSYCH"
-popup/item_2/id = 2
-
-[node name="Label" type="Label" parent="Type"]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = -152.0
-offset_top = -24.5
-offset_right = -8.0
-offset_bottom = 24.5
-grow_vertical = 2
-theme_override_font_sizes/font_size = 20
-theme_override_styles/normal = SubResource("StyleBoxFlat_b3vos")
-text = "Convert Type"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="Mix" type="LineEdit" parent="."]
 layout_mode = 0
 offset_left = 74.0
@@ -198,7 +154,7 @@ theme_override_font_sizes/font_size = 20
 text = "To avoid bugs, fix the chart name
 \"your-song.json\" -> \"your-song-normal.json\"
 
-for Psych/Old charts!!"
+for current FNF Base charts."
 horizontal_alignment = 2
 vertical_alignment = 2
 
@@ -217,7 +173,6 @@ access = 2
 [connection signal="button_down" from="Path" to="." method="_path_pressed"]
 [connection signal="pressed" from="Convert" to="." method="_on_convert_pressed"]
 [connection signal="toggled" from="DelFiles" to="." method="_on_del_files_toggled"]
-[connection signal="item_selected" from="Type" to="." method="_on_type_item_selected"]
 [connection signal="canceled" from="FileDialog" to="." method="_on_file_dialog_canceled"]
 [connection signal="confirmed" from="FileDialog" to="." method="_on_file_dialog_confirmed"]
 [connection signal="custom_action" from="FileDialog" to="." method="_on_file_dialog_custom_action"]

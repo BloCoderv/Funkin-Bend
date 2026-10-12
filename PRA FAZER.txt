@@ -1,4 +1,15 @@
-- CHARACTER DATA FNF PORT
-- SCORE: 100000% restart bug
-- endSong()
-- e muito mais
+# Alguns bugs pra ver
+- o restart é bugado as vezes o projeto crasha depois de eu apertar 'R' tem que ver isso ai
+- não tem uma forma de ir para o menu do jogo rapidamente, tem que esperar a musica acabar para voltar pra lá, então adicione uma tecla como 'F4' para voltar ao menu rapidamente.
+- sistema de perda de health e ganho tá totalmente sem nexo com o FNF BASE principalmente a perda de vida em notas sustain
+
+# URGENTE / ESTRUTURA
+
+- Organização de codigo, revisar pra ver se tem coisas desnecessarias, colocar comments mas não exagerar, 
+colocar comments em partes que são complicadas ou complexas. e principalmente organizar sistemas complexos como o 
+NoteStyle.
+
+- A estrutura tem que ficar parecida com o FNF BASE, principalmente a organização de codigo.
+
+- usar noteStyle como builder: 'noteStyle.buildHoldCoverSprite(this);' Fonte: FunkinCrew/Funkin
+outro exemplo: 'noteStyle.getStrumlineScale();' ou 'noteStyle.applyStrumlineOffsets(this);'

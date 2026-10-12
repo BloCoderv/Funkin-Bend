@@ -2,15 +2,15 @@ extends Node2D
 class_name PlayState
 
 ## SCREEN
-@onready var Screen = $UI/ScreenEssentials
+@onready var Screen: Control = $UI/ScreenEssentials
 
 ## CAMERAS
 @onready var Cam_HUD:CanvasLayer = $UI
-@onready var Camera:Camera2D = $Camera
+@onready var camera: Camera2D = $Camera
 
 ## VOICES
-@onready var voices_opponent = $VoicesOpponent
-@onready var voices_player = $VoicesPlayer
+@onready var voices_opponent: AudioStreamPlayer = $VoicesOpponent
+@onready var voices_player: AudioStreamPlayer = $VoicesPlayer
 
 ## GROUPS
 @onready var note_group:NoteGroup = $UI/NoteGroup
@@ -18,19 +18,15 @@ class_name PlayState
 @onready var popup_group:PopupGroup = $UI/PopupGroup
 
 ## HEALTH
-@onready var health_bar = $UI/HUD/HealthBar
-@onready var health_bar_bg = $UI/HUD/HealthBarBG
+@onready var health_bar: HealthBar = $UI/HUD/HealthBar
+@onready var health_bar_bg: TextureRect = $UI/HUD/HealthBarBG
 @onready var health_icons:Dictionary[String, HealthIcon] = {
 	"p1": $UI/HUD/HealthBar/IconP1, # PLAYER
 	"p2": $UI/HUD/HealthBar/IconP2 # OPPONENT
 }
 
-## SOFT CODING
-@onready var scripts_node:Node = $Scripts
-var scripts:Dictionary[String, CustomScript] = {}
-
 @onready var events_node:Node = $Events
-var events:Dictionary[String, CustomScript] = {}
+var events: Dictionary[String, Node] = {}
 
 ## CHARACTERS
 @onready var characters:Dictionary[String, Character] = {
@@ -40,21 +36,20 @@ var events:Dictionary[String, CustomScript] = {}
 }
 
 ## OTHER
-@onready var countdown = $CountdownTimer
-@onready var score_txt = $UI/HUD/ScoreTxt
+@onready var countdown: Timer = $CountdownTimer
+@onready var score_txt: Label = $UI/HUD/ScoreTxt
 
 ## STAGE
 var stage:Stage = null
 
 ## GAMEPLAY
-var botplay:bool = false
-var song_started:bool = false
-var gf_speed:float = 1.0
+var params: PlayStateParams = PlayStateParams.new()
+var botplay: bool = false
+var song_started: bool = false
+var gf_speed: float = 1.0
 
 ## CAMERAS
 var default_cam_zoom:float = 1.0
-var default_hud_cam_zoom:float = 1.0
-
 var cam_target:Vector2 = Vector2.ZERO
 var cam_zoom:float = 1.0
 var camera_speed:float = 1.0
@@ -69,7 +64,7 @@ var song_score:int = 0
 var song_hits:int = 0
 var song_misses:int = 0
 var combo:int = 0
-var health:float = 1.0:
+var health:float = Util.HEALTH_STARTING:
 	set(v):
 		health = clampf(v, Util.HEALTH_MIN, Util.HEALTH_MAX)
 
@@ -82,18 +77,20 @@ var total_played:int = 0
 #region READY
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	# SONG
+	var err:String = Song.load_song()
+	if err:
+		push_error("SONG LOAD ERROR: %s" % err)
+		Global.change_scene("res://scenes/MainMenu.tscn")
+		return
+	params = PlayStateParams.new(Song.song_id, Song.difficulty, Song.song_mix, false, botplay, 1.0)
+	
 	# STRUMS
 	strum_group.generate_strums()
 	
-	# SONG
-	var err:String = Song.load_song()
-	if err: OS.alert(err, "SONG LOAD ERROR")
-	
 	# EVENTS
 	load_events()
-	
-	# SCRIPTS
-	load_scripts()
 	
 	# LOADING CHARACTERS
 	for char in characters:
@@ -102,6 +99,9 @@ func _ready() -> void:
 				Song.characters[char],
 				false if char == "opponent" else true)
 	characters["gf"].load_character(Song.characters["girlfriend"], false)
+	# The loading scene and the play state share this short-lived cache. The
+	# character nodes now own the data they need, so release the staging refs.
+	CharacterData.clear_runtime_cache()
 	
 	# HEALTH BAR
 	health_bar_bg.position.y = Global.SCREEN_SIZE.y
@@ -123,12 +123,11 @@ func _ready() -> void:
 	setup_stage()
 	
 	# HITS CONNECT
-	Conductor.step_hit.connect(step_hit)
-	Conductor.beat_hit.connect(beat_hit)
-	Conductor.measure_hit.connect(measure_hit)
+	connect_conductor_signals()
 	
 	# INSTRUMENTAL
 	Conductor.set_bpm(Song.bpm)
+	Conductor.reset_timing()
 	Conductor.stream = Song.song["Inst"]
 	Conductor.bus = "Inst"
 	Conductor.song_position = -Conductor.sec_per_beat * 1000 * 5
@@ -140,26 +139,32 @@ func _ready() -> void:
 	countdown.start(Conductor.sec_per_beat)
 
 func start_song() -> void:
-	# VOICES
-	for i in Song.song.keys():
-		if i == "Inst": continue
-		var child = find_child(i)
-		child.stream = Song.song[i]
-		child.play()
+	# Os dois players são cacheados pela cena; não há busca de nós no loop da música.
+	voices_player.stream = Song.song.get("VoicesPlayer") as AudioStream
+	voices_opponent.stream = Song.song.get("VoicesOpponent") as AudioStream
+	if voices_player.stream != null:
+		voices_player.play()
+	if voices_opponent.stream != null:
+		voices_opponent.play()
 	
 	# START SONG
 	Conductor.play()
 	song_started = true
 
 func setup_camera() -> void:
-	Camera.zoom = Vector2(default_cam_zoom, default_cam_zoom)
+	camera.zoom = Vector2(default_cam_zoom, default_cam_zoom)
 	
 	for ev in Song.chart_events["Funkin"]:
 		if ev[1] != "FocusCamera": continue
 		
 		# SET CAMERA WITHOUT LERP
-		ev[2]["ease"] = "INSTANT"
-		execute_funkin_event("FocusCamera", ev[2])
+		var focus_values = ev[2]
+		if focus_values is Dictionary:
+			focus_values = focus_values.duplicate()
+			focus_values["ease"] = "INSTANT"
+		else:
+			focus_values = {"char": focus_values, "ease": "INSTANT"}
+		execute_funkin_event("FocusCamera", focus_values)
 		
 		break
 
@@ -209,9 +214,11 @@ func setup_stage() -> void:
 #region PROCESS
 
 func _physics_process(delta):
+	if get_tree().paused:
+		return
 	# CAMERA POSITION
-	Camera.position = \
-	lerp(Camera.position, cam_target, 0.04 * camera_speed)
+	camera.position = \
+	lerp(camera.position, cam_target, 0.04 * camera_speed)
 	
 	# EVENTS
 	_event_process()
@@ -219,7 +226,19 @@ func _physics_process(delta):
 	# HEALTH BAR LERP
 	health_bar.value = lerp(health_bar.value, health * 50, 0.15)
 
+	cam_zoom = camera.zoom.x
+
 func _process(delta):
+	if get_tree().paused:
+		return
+	if !botplay:
+		var player_is_holding:bool = false
+		for direction: int in range(4):
+			if Input.is_action_pressed(Util.NOTE_ACTIONS[direction]):
+				player_is_holding = true
+				break
+		characters["player"].is_holding = player_is_holding
+	
 	# ICONS
 	update_icons_position()
 	
@@ -239,8 +258,23 @@ func update_cameras_zoom(delta:float):
 	Cam_HUD.scale = Vector2(mult, mult)
 	Cam_HUD.offset.x = Global.SCREEN_SIZE.x * (1.0 - mult) / 2
 	Cam_HUD.offset.y = Global.SCREEN_SIZE.y * (1.0 - mult) / 2
-	mult = lerp(cam_zoom, Camera.zoom.x, exp(-delta * 3.125))
-	Camera.zoom = Vector2(mult, mult)
+	mult = lerp(cam_zoom, camera.zoom.x, exp(-delta * 3.125))
+	camera.zoom = Vector2(mult, mult)
+
+#endregion
+
+#region INPUT
+
+func _unhandled_input(event:InputEvent) -> void:
+	if botplay:
+		return
+	for direction:int in range(4):
+		var action: String = Util.NOTE_ACTIONS[direction]
+		if event.is_action_pressed(action) \
+		and !(event is InputEventKey and event.echo):
+			note_group.handle_press(direction)
+		if event.is_action_released(action):
+			note_group.handle_release(direction)
 
 #endregion
 
@@ -265,17 +299,21 @@ func judge_note(diff) -> Dictionary:
 	return {"name": "shit", "percent": 0.0, "score": 50}
 
 func player_hit(note:Note):
+	if note == null or note.was_hit or note.too_late or !note.can_hit:
+		return
 	
 	var strum:StrumNote = StrumGroup.player_strums[note.strum_data]
-	strum.note_was_hit = true
-	
-	if Preferences.hit_anim: strum.play_anim("confirm")
+	strum.play_confirm(note.is_sustain)
+	if note.is_sustain:
+		strum.start_hold_cover()
 	
 	note.was_hit = true
-	if note.is_sustain: 
+	if note.is_sustain:
 		note.is_holding = true
-		note.self_modulate.a = 0.0
-	else: NoteGroup.remove_note(note)
+		note.hold_started_at = Conductor.song_position
+		note.texture = null
+	else:
+		NoteGroup.remove_note(note)
 	
 	# RATING
 	var rating:Dictionary = judge_note(abs(Conductor.song_position - note.time))
@@ -287,43 +325,51 @@ func player_hit(note:Note):
 	popup_group.popup_rating(rating["name"])
 	
 	# HEALTH
-	health += Util.HEALTH_GAIN
+	var health_bonus:float = Util.HEALTH_SICK_BONUS
+	match rating["name"]:
+		"good": health_bonus = Util.HEALTH_GOOD_BONUS
+		"bad": health_bonus = Util.HEALTH_BAD_BONUS
+		"shit": health_bonus = Util.HEALTH_SHIT_BONUS
+	health += health_bonus
 	
 	# SCORES
 	song_hits += 1
 	song_score += rating["score"]
 	
-	combo += 1
+	if rating["name"] == "bad" and Util.JUDGEMENT_BAD_COMBO_BREAK \
+	or rating["name"] == "shit" and Util.JUDGEMENT_SHIT_COMBO_BREAK:
+		combo = 0
+	else:
+		combo += 1
 	popup_group.popup_combo(combo)
 	
-	characters["player"].is_holding = true
+	characters["player"].is_holding = !botplay
 	player_sing(note.strum_data, note.is_sustain)
 	
 	update_scores()
 
 func opponent_hit(note:Note):
 	var strum:StrumNote = StrumGroup.opponent_strums[note.strum_data]
-	if Preferences.opponent_hit: strum.play_anim("confirm")
+	if Preferences.opponent_hit: strum.play_confirm(note.is_sustain)
+	if note.is_sustain:
+		strum.start_hold_cover()
 	
 	note.was_hit = true
 	
 	if note.is_sustain:
 		note.is_holding = true
-		note.self_modulate.a = 0.0
-	else: 
+		note.texture = null
+	else:
 		NoteGroup.remove_note(note)
+	characters["opponent"].is_holding = note.is_sustain
 	
 	strum.splash_note()
 	
 	opponent_sing(note.strum_data, note.is_sustain)
 
 func miss_note(direction:int, note:Note = null, kill:bool = false):
-	if !note or !note.is_sustain:
-		health -= Util.HEALTH_LOSS
-		song_misses += 1
-	elif note:
-		health -= int(note.length / 10) * 0.02
-		song_misses += 2
+	health += Util.HEALTH_GHOST_MISS_PENALTY if note == null else Util.HEALTH_MISS_PENALTY
+	song_misses += 1
 	
 	# RATING
 	if note:
@@ -336,6 +382,36 @@ func miss_note(direction:int, note:Note = null, kill:bool = false):
 	
 	if kill: NoteGroup.remove_note(note)
 	update_scores()
+
+func drop_hold(note:Note, remaining_ms:float) -> void:
+	if note == null or note.hold_drop_handled:
+		return
+	note.hold_drop_handled = true
+	characters["player"].is_holding = false
+	characters["player"].hold_time = 0.0
+	remaining_ms = maxf(remaining_ms, 0.0)
+	# The base game only penalizes a meaningful amount of sustain that was dropped.
+	if remaining_ms > Util.HOLD_DROP_PENALTY_THRESHOLD_MS:
+		health += clampf(
+			remaining_ms / 1000.0 * Util.HEALTH_HOLD_DROP_PENALTY_PER_SECOND,
+			-Util.HEALTH_HOLD_DROP_PENALTY_MAX,
+			0.0)
+		song_score += int(remaining_ms / 1000.0 * Util.SCORE_HOLD_DROP_PENALTY_PER_SECOND)
+		combo = 0
+		characters["player"].play_anim(Util.SING_ANIMS[note.strum_data] + "miss")
+		update_scores()
+
+func hold_note_tick(note:Note, delta:float) -> void:
+	if note == null or !note.was_hit or note.hold_drop_handled:
+		return
+	# FNF awards sustain value continuously instead of treating the tail as
+	# another hit. Keep fractional points so frame rate does not change score.
+	note.hold_score_remainder += delta * Util.SCORE_HOLD_BONUS_PER_SECOND
+	var points:int = int(note.hold_score_remainder)
+	if points > 0:
+		note.hold_score_remainder -= points
+		song_score += points
+	health += delta * Util.HEALTH_HOLD_BONUS_PER_SECOND
 
 #endregion
 
@@ -361,69 +437,44 @@ func calculate_rating():
 #region CONDUCTOR HITS
 
 func step_hit(step:int) -> void:
-	pass
+	character_bopper(step)
 
 func beat_hit(beat:int) -> void:
-	character_bopper(beat)
-	
 	health_icons["p1"].scale = Vector2(1.2, 1.2)
 	health_icons["p2"].scale = Vector2(1.2, 1.2)
 	
 	if camera_zoom_rate > 0 \
 	and beat % camera_zoom_rate == 0 \
-	and Camera.zoom.x < 1.35 * default_cam_zoom:
+	and camera.zoom.x < 1.35 * default_cam_zoom:
 		Cam_HUD.scale += Vector2(
 			hud_camera_zoom_intensity, hud_camera_zoom_intensity
 		)
-		Camera.zoom = Vector2(
+		camera.zoom = Vector2(
 			camera_zoom_intensity, camera_zoom_intensity
 		)
 
 func measure_hit(section:int) -> void:
 	pass
 
-func character_bopper(beat:int) -> void:
+func character_bopper(step:int) -> void:
 	for char in characters.keys():
 		var character:Character = characters[char]
-		
+		var dance_every:float = character.data.dance_every
 		if char == "gf":
-			if beat % int(round(gf_speed * character.dance_beat_num))== 0 \
-			and !character.animation.begins_with(Util.SING_ANIM_ID):
-				character.dance()
-			continue
-		
-		if beat % character.dance_beat_num == 0 \
-		and !character.animation.begins_with(Util.SING_ANIM_ID):
+			dance_every *= gf_speed
+		var dance_every_steps:float = dance_every * 4.0
+		if dance_every > 0.0 \
+		and is_zero_approx(fmod(float(step), dance_every_steps)):
 			character.dance()
-
-#endregion
-
-#region SCRIPTS
-
-func load_scripts():
-	# CLEAR
-	for child in scripts_node.get_children():
-		child.queue_free()
-	scripts = {}
-	
-	var files:Array = []
-	files = DirAccess.get_files_at("res://assets/scripts")
-	for file in files:
-		# SCRIPT
-		if file.get_extension() != "gd": continue
-		var scr:GDScript = load("res://assets/scripts/" + file)
-		
-		# NODE
-		var node:Node = Node.new()
-		node.set_script(scr)
-		scripts_node.add_child(node)
 
 #endregion
 
 #region EVENTS
 
-var funkin_events:Array = []
-var bend_events:Array = []
+var funkin_events: Array = []
+var bend_events: Array = []
+var _funkin_event_index: int = 0
+var _bend_event_index: int = 0
 
 func load_events() -> void:
 	var has_no_script:Array = []
@@ -435,49 +486,62 @@ func load_events() -> void:
 	
 	funkin_events = Song.chart_events["Funkin"].duplicate()
 	bend_events = Song.chart_events["Bend"].duplicate()
+	funkin_events.sort_custom(_sort_events)
+	bend_events.sort_custom(_sort_events)
+	_funkin_event_index = 0
+	_bend_event_index = 0
 	
 	# FUNKIN EVENTS
 	for ev in funkin_events:
-		var event_name = ev[1]
+		var event_name: String = str(ev[1])
+		var event_script_path: String = "res://assets/events/%s.gd" % event_name
 		if !events.has(event_name):
-			if !FileAccess.file_exists("res://assets/events/%s.gd" % event_name):
+			if !FileAccess.file_exists(event_script_path):
 				# Prevents showing this alert more than once
 				if event_name not in has_no_script:
 					OS.alert("%s has no script" % event_name, "Warning!")
 					has_no_script.append(event_name)
 				continue
-			var scr:GDScript = load("res://assets/events/%s.gd" % event_name)
-			var node:Node = Node.new()
-			events_node.add_child(node)
-			node.set_script(scr)
-			events[event_name] = node
-	has_no_script = []
-	
-	# BEND EVENTS
-	for ev in bend_events:
-		var event_name = ev[1]
-		if !events.has(event_name):
-			if !FileAccess.file_exists("res://assets/events/%s.gd" % event_name):
-				if event_name not in has_no_script:
-					OS.alert("%s has no script" % event_name, "Warning!")
-					has_no_script.append(event_name)
-				continue
-			var scr:GDScript = load("res://assets/events/%s.gd" % event_name)
+			var scr: GDScript = ResourceLoader.load(event_script_path) as GDScript
 			var node:Node = Node.new()
 			events_node.add_child(node)
 			node.set_script(scr)
 			events[event_name] = node
 
-func _event_process():
-	for ev in funkin_events:
-		if ev[0] > Conductor.song_position: break
-		execute_funkin_event(ev[1], ev[2])
-		funkin_events.erase(ev)
+	has_no_script = []
 	
+	# BEND EVENTS
 	for ev in bend_events:
-		if ev[0] > Conductor.song_position: break
-		execute_bend_event(ev[1], ev[2], ev[3])
-		bend_events.erase(ev)
+		var event_name: String = str(ev[1])
+		var event_script_path: String = "res://assets/events/%s.gd" % event_name
+		if !events.has(event_name):
+			if !FileAccess.file_exists(event_script_path):
+				if event_name not in has_no_script:
+					OS.alert("%s has no script" % event_name, "Warning!")
+					has_no_script.append(event_name)
+				continue
+			var scr: GDScript = ResourceLoader.load(event_script_path) as GDScript
+			var node:Node = Node.new()
+			events_node.add_child(node)
+			node.set_script(scr)
+			events[event_name] = node
+
+static func _sort_events(first: Array, second: Array) -> bool:
+	return float(first[0]) < float(second[0])
+
+func _event_process():
+	while _funkin_event_index < funkin_events.size():
+		var funkin_event: Array = funkin_events[_funkin_event_index] as Array
+		if float(funkin_event[0]) > Conductor.song_position:
+			break
+		execute_funkin_event(str(funkin_event[1]), funkin_event[2])
+		_funkin_event_index += 1
+	while _bend_event_index < bend_events.size():
+		var bend_event: Array = bend_events[_bend_event_index] as Array
+		if float(bend_event[0]) > Conductor.song_position:
+			break
+		execute_bend_event(str(bend_event[1]), bend_event[2], bend_event[3])
+		_bend_event_index += 1
 
 func execute_funkin_event(event:String, values):
 	if events.has(event) and events[event].has_method("_on_event"):
@@ -492,12 +556,15 @@ func execute_bend_event(event:String, value1, value2):
 #region CHARACTERS
 
 func player_sing(data:int, is_sustain:bool):
-	var anim:String = Util.SING_ANIMS[data]
-	characters["player"].hold_time = 0.0
-	characters["player"].play_anim(anim, true)
+	characters["player"].begin_sing(data)
+
+func player_release(data:int) -> void:
+	characters["player"].end_sing(data)
 
 func opponent_sing(data:int, is_sustain:bool):
 	var anim:String = Util.SING_ANIMS[data]
+	if !is_sustain:
+		characters["opponent"].is_holding = false
 	characters["opponent"].hold_time = 0.0
 	characters["opponent"].play_anim(anim, true)
 	
@@ -542,34 +609,39 @@ func set_camera_target(char:String, pos:Vector2 = Vector2.ZERO, lerp:bool = true
 		cam_target += character.data.camera_position
 		cam_target += char_pos + pos + character.camera_offset
 	
-	if !lerp: Camera.position = cam_target
+	if !lerp: camera.position = cam_target
 
-func tween_camera_zoom(zoom:float, duration:float, ease:String, direct:bool = false):
+var tweenCameraZoom:Tween = null
+
+func tween_camera_zoom(zoom:float, duration:float, ev_ease:String, direct:bool = false):
 	var tw:Tween = \
 	create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS).\
-	set_ease( Util.get_ease_from_flixel_ease(ease) ).\
-	set_trans( Util.get_trans_from_flixel_ease(ease) ).\
-	set_parallel(true)
+	set_ease( Util.get_ease_from_flixel_ease(ev_ease) ).\
+	set_trans( Util.get_trans_from_flixel_ease(ev_ease) )
+
+	if tweenCameraZoom != null: tweenCameraZoom.kill()
+
+	tweenCameraZoom = tw
 	
 	var z:float = zoom * (1.0 if direct else default_cam_zoom)
 	
 	if duration > 0.0:
-		tw.tween_property(Camera, "zoom", Vector2(z, z), duration)
-		tw.tween_property(self, "cam_zoom", z, duration)
+		tweenCameraZoom.tween_property(camera, "zoom", Vector2(z, z), duration)
 	else:
-		Camera.zoom = Vector2(z, z)
-		cam_zoom = z
+		camera.zoom = Vector2(z, z)
 
 #endregion
 
 #region OTHER
 
-func _input(event):
+func _input(_event):
 	if Input.is_action_just_pressed("reset"):
 		restart_song()
+	elif Input.is_action_just_pressed("return_to_menu"):
+		return_to_menu()
 
 func reset_vars() -> void:
-	health = 1.0
+	health = Util.HEALTH_STARTING
 	combo = 0
 	song_score = 0
 	song_misses = 0
@@ -581,28 +653,52 @@ func reset_vars() -> void:
 	
 	song_started = false
 
-func restart_song() -> void:
+func cleanup_song_state() -> void:
+	Engine.time_scale = 1.0
+	get_tree().paused = false
+	countdown.stop()
+	note_group.clear_notes()
 	StrumGroup.clear_strumlines()
+	Conductor.stop()
+	Audio.stop_all()
+	voices_player.stop()
+	voices_opponent.stop()
+	if tweenCameraZoom != null:
+		tweenCameraZoom.kill()
+		tweenCameraZoom = null
+	if Conductor.step_hit.is_connected(step_hit):
+		Conductor.step_hit.disconnect(step_hit)
+	if Conductor.beat_hit.is_connected(beat_hit):
+		Conductor.beat_hit.disconnect(beat_hit)
+	if Conductor.measure_hit.is_connected(measure_hit):
+		Conductor.measure_hit.disconnect(measure_hit)
+	if Conductor.finished.is_connected(end_song):
+		Conductor.finished.disconnect(end_song)
+	song_started = false
+
+func connect_conductor_signals() -> void:
+	if !Conductor.step_hit.is_connected(step_hit):
+		Conductor.step_hit.connect(step_hit)
+	if !Conductor.beat_hit.is_connected(beat_hit):
+		Conductor.beat_hit.connect(beat_hit)
+	if !Conductor.measure_hit.is_connected(measure_hit):
+		Conductor.measure_hit.connect(measure_hit)
+	if !Conductor.finished.is_connected(end_song):
+		Conductor.finished.connect(end_song)
+
+func restart_song() -> void:
+	cleanup_song_state()
+	connect_conductor_signals()
 	
 	Conductor.set_bpm(Song.bpm)
+	Conductor.reset_timing()
 	Conductor.song_position = -Conductor.sec_per_beat * 1000 * 5
-	Conductor.stop()
-	
 	NoteGroup.load_notes()
-	note_group.clear_notes()
-	
-	for i in Song.song.keys():
-		if i == "Inst": continue
-		var child = find_child(i)
-		child.stop()
 	
 	strum_group.generate_strums()
 	
 	# EVENTS
 	load_events()
-	
-	# SCRIPTS
-	load_scripts()
 	
 	# HEALTH BAR
 	health_bar_bg.position.y = Global.SCREEN_SIZE.y
@@ -630,7 +726,24 @@ func restart_song() -> void:
 	
 	countdown.start(Conductor.sec_per_beat)
 
+func return_to_menu() -> void:
+	cleanup_song_state()
+	Global.change_scene("res://scenes/MainMenu.tscn")
+
 func end_song() -> void:
-	pass
+	if !song_started:
+		return
+	song_started = false
+	Global.last_result = {
+		"song": Song.song_name,
+		"score": song_score,
+		"misses": song_misses,
+		"accuracy": calculate_rating() * 100.0
+	}
+	cleanup_song_state()
+	Global.change_scene("res://scenes/Results.tscn")
+
+func _exit_tree() -> void:
+	cleanup_song_state()
 
 #endregion

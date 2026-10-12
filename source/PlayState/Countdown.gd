@@ -1,36 +1,17 @@
 extends Timer
 
-@onready var countdown = $"../UI/HUD/Countdown"
+@onready var countdown:Sprite2D = $"../UI/HUD/Countdown"
 @onready var playstate:PlayState = get_parent()
 
 var counter:int = 0
-func countdown_tick():
+func countdown_tick() -> void:
 	playstate.character_bopper(counter)
+	var sound: AudioStream = Global.note_style.get_countdown_sound(counter)
+	if sound != null:
+		Audio.play(sound, 0.6, "Sfx")
 	match counter:
-		0: Audio.play(ResourceLoader.load(
-				"res://assets/sounds/countdown/introTHREE.ogg", 
-				"AudioStream", ResourceLoader.CACHE_MODE_IGNORE), 0.6, "Sfx")
-		1: 
-			Audio.play(ResourceLoader.load(
-				"res://assets/sounds/countdown/introTWO.ogg", 
-				"AudioStream", ResourceLoader.CACHE_MODE_IGNORE), 0.6, "Sfx")
-			show_countdown(ResourceLoader.load(
-				"res://assets/images/ui/intro/ready.png", 
-				"AudioStream", ResourceLoader.CACHE_MODE_IGNORE))
-		2: 
-			Audio.play(ResourceLoader.load(
-				"res://assets/sounds/countdown/introONE.ogg", 
-				"AudioStream", ResourceLoader.CACHE_MODE_IGNORE), 0.6, "Sfx")
-			show_countdown(ResourceLoader.load(
-				"res://assets/images/ui/intro/set.png", 
-				"AudioStream", ResourceLoader.CACHE_MODE_IGNORE))
-		3: 
-			Audio.play(ResourceLoader.load(
-				"res://assets/sounds/countdown/introGO.ogg", 
-				"AudioStream", ResourceLoader.CACHE_MODE_IGNORE), 0.6, "Sfx")
-			show_countdown(ResourceLoader.load(
-				"res://assets/images/ui/intro/go.png", 
-				"AudioStream", ResourceLoader.CACHE_MODE_IGNORE))
+		1, 2, 3:
+			show_countdown(Global.note_style.get_countdown_texture(counter))
 		4: 
 			stop()
 			countdown.texture = null

@@ -1,0 +1,62 @@
+{
+  "version": "2.2.4",
+  "songName": "Darnell (Cow Mix)",
+  "artist": "Noichi",
+  "charter": "Toffee Caramel",
+  "divisions": 96,
+  "looped": false,
+  "offsets": {
+    "instrumental": 0,
+    "altInstrumentals": {    },
+    "vocals": {    },
+    "altVocals": {    }
+  },
+  "playData": {
+    "songVariations": [    ],
+    "difficulties": [
+      "easy",
+      "normal",
+      "hard"
+    ],
+    "characters": {
+      "player": "cow",
+      "girlfriend": "gf",
+      "opponent": "darnell",
+      "instrumental": "",
+      "altInstrumentals": [ ],
+      "opponentVocals": [
+        "darnell"
+      ],
+      "playerVocals": [
+        "cow"
+      ]
+    },
+    "album": "expansion2",
+    "stage": "spookyMansion",
+    "noteStyle": "funkin",
+    "ratings": {
+      "easy": 7,
+      "normal": 8,
+      "hard": 9
+    },
+    "previewStart": 0,
+    "previewEnd": 0
+  },
+  "generatedBy": "Friday Night Funkin' - v0.6.4",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 160,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}

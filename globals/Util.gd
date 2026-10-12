@@ -6,20 +6,43 @@ class_name Util
 
 #region CONSTANTS
 
-const HEALTH_MAX = 2.0
-const HEALTH_MIN = 0.0
-const HEALTH_GAIN = 0.02
-const HEALTH_LOSS = 0.01
-
-const PIXEL_PER_MS = 0.45
-
-const SING_ANIMS = ["singLEFT", "singDOWN", "singUP", "singRIGHT"]
-const SING_ANIM_ID = "sing"
-
-const SPLASHES_SCALE = 1.4
-
-const COLOR_HEALTH_RED = Color(255 / 255.0, 0, 0)
-const COLOR_HEALTH_GREEN = Color(102 / 255.0, 255 / 255.0, 51 / 255.0)
+const ConstantsScript: Script = preload("res://source/util/Constants.gd")
+const HEALTH_MAX: float = ConstantsScript.HEALTH_MAX
+const HEALTH_STARTING: float = ConstantsScript.HEALTH_STARTING
+const HEALTH_MIN: float = ConstantsScript.HEALTH_MIN
+const HEALTH_SICK_BONUS: float = ConstantsScript.HEALTH_SICK_BONUS
+const HEALTH_GOOD_BONUS: float = ConstantsScript.HEALTH_GOOD_BONUS
+const HEALTH_BAD_BONUS: float = ConstantsScript.HEALTH_BAD_BONUS
+const HEALTH_SHIT_BONUS: float = ConstantsScript.HEALTH_SHIT_BONUS
+const HEALTH_HOLD_BONUS_PER_SECOND: float = ConstantsScript.HEALTH_HOLD_BONUS_PER_SECOND
+const HEALTH_MISS_PENALTY: float = ConstantsScript.HEALTH_MISS_PENALTY
+const HEALTH_GHOST_MISS_PENALTY: float = ConstantsScript.HEALTH_GHOST_MISS_PENALTY
+const HEALTH_HOLD_DROP_PENALTY_PER_SECOND: float = ConstantsScript.HEALTH_HOLD_DROP_PENALTY_PER_SECOND
+const HEALTH_HOLD_DROP_PENALTY_MAX: float = ConstantsScript.HEALTH_HOLD_DROP_PENALTY_MAX
+const SCORE_GHOST_MISS_PENALTY: float = ConstantsScript.SCORE_GHOST_MISS_PENALTY
+const SCORE_HOLD_BONUS_PER_SECOND: float = ConstantsScript.SCORE_HOLD_BONUS_PER_SECOND
+const SCORE_HOLD_DROP_PENALTY_PER_SECOND: float = ConstantsScript.SCORE_HOLD_DROP_PENALTY_PER_SECOND
+const HOLD_DROP_PENALTY_THRESHOLD_MS: float = ConstantsScript.HOLD_DROP_PENALTY_THRESHOLD_MS
+const JUDGEMENT_BAD_COMBO_BREAK: bool = ConstantsScript.JUDGEMENT_BAD_COMBO_BREAK
+const JUDGEMENT_SHIT_COMBO_BREAK: bool = ConstantsScript.JUDGEMENT_SHIT_COMBO_BREAK
+const PIXEL_PER_MS: float = ConstantsScript.PIXEL_PER_MS
+const NOTE_SAFE_ZONE: float = ConstantsScript.NOTE_SAFE_ZONE
+const NOTE_INVALID_ZONE: float = ConstantsScript.NOTE_INVALID_ZONE
+const NOTE_SPAWN_OFFSET: float = ConstantsScript.NOTE_SPAWN_OFFSET
+const NOTE_ACTIONS: Array[String] = ConstantsScript.NOTE_ACTIONS
+const STRUMLINE_NOTE_SIZE: float = ConstantsScript.STRUMLINE_NOTE_SIZE
+const STRUMLINE_SEPARATION: float = ConstantsScript.STRUMLINE_SEPARATION
+const STRUMLINE_DEFAULT_SCALE: float = ConstantsScript.STRUMLINE_DEFAULT_SCALE
+const STRUMLINE_MARGIN: float = ConstantsScript.STRUMLINE_MARGIN
+const STRUMLINE_MANIA: int = ConstantsScript.STRUMLINE_MANIA
+const STRUMLINE_Y_MARGIN: float = ConstantsScript.STRUMLINE_Y_MARGIN
+const MIDDLESCROLL_SCALE: float = ConstantsScript.MIDDLESCROLL_SCALE
+const STRUMLINE_BACKGROUND_MARGIN: float = ConstantsScript.STRUMLINE_BACKGROUND_MARGIN
+const SING_ANIMS: Array[String] = ConstantsScript.SING_ANIMS
+const SING_ANIM_ID: String = ConstantsScript.SING_ANIM_ID
+const SPLASHES_SCALE: float = ConstantsScript.SPLASHES_SCALE
+const COLOR_HEALTH_RED: Color = ConstantsScript.COLOR_HEALTH_RED
+const COLOR_HEALTH_GREEN: Color = ConstantsScript.COLOR_HEALTH_GREEN
 
 #endregion
 

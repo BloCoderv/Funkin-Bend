@@ -3,10 +3,6 @@ class_name PopupGroup
 
 
 # ASSET PRELOAD
-const POPUPS = preload("res://assets/images/ui/popup/popups.tres")
-const COMBO_NUMS = preload("res://assets/images/ui/popup/combo_nums.tres")
-
-
 @onready var combo_nums = $ComboNums
 @onready var ratings = $Ratings
 
@@ -31,8 +27,8 @@ func popup_rating(rat:String):
 	
 	# IMAGE
 	var rat_image:Texture2D = null
-	if POPUPS.has_animation(rat):
-		rat_image = POPUPS.get_frame_texture(rat, 0)
+	if Global.POPUPS != null and Global.POPUPS.has_animation(rat):
+		rat_image = Global.POPUPS.get_frame_texture(rat, 0)
 	else:
 		printerr("Rating not exists")
 		return
@@ -50,7 +46,8 @@ func popup_rating(rat:String):
 	
 	rating.texture = rat_image
 	rating.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	rating.size = rating.texture.get_size() * Vector2(0.65, 0.65)
+	var rating_scale: float = Global.note_style.get_judgement_scale(rat)
+	rating.size = rating.texture.get_size() * Vector2(rating_scale, rating_scale)
 	
 	rating.position.x = (Global.SCREEN_SIZE.x * 0.474) - rating.size.x / 2
 	rating.position.y = (Global.SCREEN_SIZE.y * 0.45 - 60) - rating.size.y / 2
@@ -85,10 +82,14 @@ func popup_combo(combo:int):
 			combo_node.modulate.a = 1
 		
 		combo_node.texture = get_combo_number(temp_combo[num])
+		if combo_node.texture == null:
+			combo_node.visible = false
+			continue
+		combo_node.visible = true
 		combo_node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		
-		combo_node.size = \
-		combo_node.texture.get_size() * Vector2(0.45, 0.45)
+		var combo_scale: float = Global.note_style.get_combo_scale()
+		combo_node.size = combo_node.texture.get_size() * Vector2(combo_scale, combo_scale)
 		
 		combo_node.position.x = \
 		(Global.SCREEN_SIZE.x * 0.507) + (36 * (num + 1)) - 65
@@ -110,8 +111,8 @@ func popup_combo(combo:int):
 
 func get_combo_number(num:String) -> Texture2D:
 	var combo_num = null
-	if COMBO_NUMS.has_animation(str(num)):
-		combo_num = COMBO_NUMS.get_frame_texture(str(num), 0)
+	if Global.COMBO_NUMS != null and Global.COMBO_NUMS.has_animation(str(num)):
+		combo_num = Global.COMBO_NUMS.get_frame_texture(str(num), 0)
 	else:
 		printerr("Combo number not exists - " + str(num))
 	return combo_num
